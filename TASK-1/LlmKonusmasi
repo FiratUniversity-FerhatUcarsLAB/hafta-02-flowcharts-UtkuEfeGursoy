@@ -1,0 +1,784 @@
+Şimdi seninle bir algoritma yazıcağız ve sen algoritmanın hem spuedocodesini hem de akış semasını DOT dilinde bana vericeksin anlaştık mı?
+
+
+
+Düşünme sürecini göster
+Anlaştık. Harika bir plan!
+
+Bir algoritma uzmanı ve yazılım yardımcınız olarak bu çalışma şeklini çok verimli buluyorum. Algoritmayı iki farklı ama birbirini tamamlayan formatta sunacağım:
+
+Pseudocode (Sözde Kod): Algoritmanın mantığını ve adımlarını, herhangi bir programlama dilinin katı kurallarına bağlı kalmadan, insan diline yakın bir formatta ifade etmemizi sağlar. Bu, algoritmanın ne yaptığını anlamak için mükemmeldir.
+
+DOT Dili ile Akış Şeması (Flowchart): Bu mantığın görsel bir haritasını, yani bir akış şemasını (flowchart) oluşturmamızı sağlar. DOT, metin tabanlı bir dildir ve Graphviz gibi araçlarla görsel diyagramlara dönüştürülür. Karar noktaları (koşullar), döngüler ve adımlar arasındaki akışı net bir şekilde görmemizi sağlar. Bu da algoritmanın nasıl çalıştığını anlamak için idealdir.
+
+DOT kodunu oluştururken, standart akış şeması sembollerini (başlangıç/bitiş için elips, işlemler için dikdörtgen, kararlar için baklava dilimi, girdi/çıktı için paralelkenar) kullanarak mantığı görselleştireceğim.
+
+Sürecimiz şu şekilde işleyecek:
+
+Siz bana üzerinde çalışmak istediğiniz problemi veya fikri vereceksiniz.
+
+Ben, bu probleme çözüm üreten algoritmanın önce pseudocode halini yazacağım.
+
+Ardından, bu pseudocode'daki mantıksal akışı birebir takip eden DOT dili kodunu oluşturacağım.
+
+Hazırım. Üzerinde çalışacağımız algoritmanın konusu nedir?
+
+
+
+
+
+
+
+Atm uygulaması yapıcağız ama bu atm sıradan bir atm olmasın atmnin içinde bir de altın satın alma yeri olsun bu atmnin yazılımı için bana yardım eder misin?
+
+
+
+Düşünme sürecini göster
+Harika bir proje, anlaştık! Sıradan bir ATM'nin dışına çıkarak ona bir yatırım aracı özelliği eklemek, algoritmanın mantığını daha zengin ve ilginç hale getirir.
+
+Bir algoritma uzmanı olarak, bu tür bir sistemin hem güvenli hem de kullanıcı dostu olması gerektiğini düşünüyorum. Bu nedenle, adımları modüler prosedürlere ayırarak, her bir işlevin (para çekme, altın alma vb.) kendi içinde tutarlı ve anlaşılır olmasını sağlayacağım.
+
+Aşağıda, bu özel ATM yazılımı için hazırladığım pseudocode ve DOT dili akış şemasını bulabilirsiniz.
+
+1. ATM Algoritması (Pseudocode)
+Bu pseudocode, algoritmanın mantıksal adımlarını, karar noktalarını ve kullanıcı etkileşimlerini insan diline yakın bir formatta açıklar.
+
+Plaintext
+
+// ========================================================================
+// ALGORİTMA: AltinIslemli_ATM_Sistemi
+// AMAÇ: Standart bankacılık işlemlerine ek olarak, kullanıcının
+//       hesabından anlık kur ile altın satın alabilmesini sağlayan
+//       güvenli bir ATM yazılımı mantığı oluşturmak.
+// ========================================================================
+
+BAŞLA
+
+  // --------------------------------------------------------------------
+  // 1. TEMEL VERİ YAPILARI
+  // --------------------------------------------------------------------
+  YAPI MusteriHesabi:
+    KartID: METİN
+    SifreHash: METİN // Güvenlik için şifre açık metin olarak tutulmaz
+    Bakiye: ONDALIKLI SAYI
+  BİTİR YAPI
+
+  // Sembolik bir veritabanı
+  Veritabani = [ MusteriHesabi1, MusteriHesabi2, ... ]
+
+  // --------------------------------------------------------------------
+  // 2. ANA SİSTEM DÖNGÜSÜ
+  // --------------------------------------------------------------------
+  ANA KISIM:
+    SÜRECE TRUE: // ATM sürekli çalışır durumda
+      EKRANA_YAZ("Lütfen kartınızı takınız.")
+      GirilenKartID = KART_OKUYUCUDAN_OKU()
+      
+      Hesap = VeritabanindanHesapBul(GirilenKartID)
+      
+      EĞER Hesap BULUNDUYSA:
+        DogrulamaBasarili = KimlikDogrula(Hesap)
+        EĞER DogrulamaBasarili == TRUE:
+          IslemMenusu(Hesap) // Kullanıcıyı işlem menüsüne yönlendir
+        BİTİR EĞER
+      DEĞİLSE:
+        EKRANA_YAZ("Geçersiz kart. Kart iade ediliyor.")
+      BİTİR EĞER
+      
+      EKRANA_YAZ("İyi günler dileriz. Lütfen kartınızı alınız.")
+    BİTİR SÜRECE
+  BİTİR ANA KISIM
+
+  // --------------------------------------------------------------------
+  // 3. YARDIMCI PROSEDÜRLER
+  // --------------------------------------------------------------------
+
+  PROSEDÜR KimlikDogrula(Hesap):
+    SifreDenemeHakki = 3
+    SÜRECE SifreDenemeHakki > 0:
+      GirilenSifre = KULLANICIDAN_AL("Lütfen 4 haneli şifrenizi girin: ")
+      GirilenSifreHash = HashFonksiyonu(GirilenSifre) // Girilen şifreyi hash'le
+      
+      EĞER GirilenSifreHash == Hesap.SifreHash:
+        RETURN TRUE // Başarılı giriş
+      DEĞİLSE:
+        SifreDenemeHakki = SifreDenemeHakki - 1
+        EKRANA_YAZ("Hatalı şifre. Kalan deneme hakkı: " + SifreDenemeHakki)
+      BİTİR EĞER
+    BİTİR SÜRECE
+    
+    EKRANA_YAZ("Şifre 3 kez hatalı girildi. Güvenlik nedeniyle kartınız bloke edilmiştir.")
+    RETURN FALSE // Başarısız giriş
+  BİTİR PROSEDÜR
+
+  PROSEDÜR IslemMenusu(Hesap):
+    OturumAcik = TRUE
+    SÜRECE OturumAcik:
+      EKRANA_YAZ("\n--- ANA MENÜ ---")
+      EKRANA_YAZ("1. Bakiye Görüntüle")
+      EKRANA_YAZ("2. Para Çek")
+      EKRANA_YAZ("3. Para Yatır")
+      EKRANA_YAZ("4. Altın Satın Al")
+      EKRANA_YAZ("5. Çıkış")
+      Secim = KULLANICIDAN_AL_SAYI("Lütfen yapmak istediğiniz işlemi seçin: ")
+
+      EĞER Secim == 1: BakiyeGoster(Hesap)
+      DEĞİLSE EĞER Secim == 2: ParaCek(Hesap)
+      DEĞİLSE EĞER Secim == 3: ParaYatir(Hesap)
+      DEĞİLSE EĞER Secim == 4: AltinSatinAl(Hesap)
+      DEĞİLSE EĞER Secim == 5:
+        OturumAcik = FALSE // Döngüyü sonlandır
+      DEĞİLSE:
+        EKRANA_YAZ("Geçersiz seçim.")
+      BİTİR EĞER
+    BİTİR SÜRECE
+  BİTİR PROSEDÜR
+
+  PROSEDÜR BakiyeGoster(Hesap):
+    EKRANA_YAZ("Mevcut Bakiyeniz: " + Hesap.Bakiye + " TL")
+  BİTİR PROSEDÜR
+
+  PROSEDÜR ParaCek(Hesap):
+    Miktar = KULLANICIDAN_AL_SAYI("Çekmek istediğiniz tutarı girin: ")
+    EĞER Miktar <= Hesap.Bakiye:
+      Hesap.Bakiye = Hesap.Bakiye - Miktar
+      PARA_BOLMESINDEN_VER(Miktar)
+      EKRANA_YAZ("İşlem başarılı. Yeni bakiyeniz: " + Hesap.Bakiye + " TL")
+    DEĞİLSE:
+      EKRANA_YAZ("Yetersiz bakiye.")
+    BİTİR EĞER
+  BİTİR PROSEDÜR
+
+  PROSEDÜR AltinSatinAl(Hesap):
+    // Bu fonksiyon, dış bir servisten anlık altın fiyatını çeker.
+    AnlikGramFiyati = DIŞ_SERVİSTEN_ALTIN_FİYATI_GETİR()
+    EKRANA_YAZ("Anlık Altın Fiyatı (1 Gram): " + AnlikGramFiyati + " TL")
+    
+    MiktarGram = KULLANICIDAN_AL_SAYI("Kaç gram altın almak istersiniz?: ")
+    ToplamTutar = MiktarGram * AnlikGramFiyati
+    
+    EKRANA_YAZ(MiktarGram + " gram altın için ödenecek tutar: " + ToplamTutar + " TL. Onaylıyor musunuz? (E/H)")
+    Onay = KULLANICIDAN_AL()
+    
+    EĞER Onay == "E" VEYA Onay == "e":
+      EĞER ToplamTutar <= Hesap.Bakiye:
+        Hesap.Bakiye = Hesap.Bakiye - ToplamTutar
+        ALTIN_BOLMESINDEN_VER(MiktarGram) // Fiziksel altını veya sertifikayı ver
+        EKRANA_YAZ("Altın alım işlemi başarılı. Yeni bakiyeniz: " + Hesap.Bakiye + " TL")
+      DEĞİLSE:
+        EKRANA_YAZ("Yetersiz bakiye. İşlem iptal edildi.")
+      BİTİR EĞER
+    DEĞİLSE:
+      EKRANA_YAZ("İşlem iptal edildi.")
+    BİTİR EĞER
+  BİTİR PROSEDÜR
+
+// ... (ParaYatir gibi diğer prosedürler de benzer şekilde tanımlanır) ...
+
+BİTİR
+2. Akış Şeması (DOT Dili)
+Bu DOT kodu, yukarıdaki pseudocode'un mantıksal akışını görsel bir diyagrama dönüştürür. Bu kodu kopyalayıp Graphviz gibi bir DOT derleyicisine (online veya masaüstü) yapıştırarak akış şemasını oluşturabilirsiniz.
+
+Kod snippet'i
+
+digraph ATM_Flowchart {
+    // Grafik ayarları
+    rankdir=TB;
+    node [shape=box, style=rounded, fontname="Helvetica"];
+    edge [fontname="Helvetica"];
+
+    // Düğüm tanımlamaları
+    Start [label="Başla", shape=ellipse, style=filled, fillcolor=lightblue];
+    InsertCard [label="Kartınızı Takınız", shape=parallelogram];
+    ReadCard [label="Kart ID'sini Oku"];
+    FindAccount [label="Hesap Veritabanında\nAranıyor"];
+    IsAccountFound [label="Hesap Bulundu mu?", shape=diamond, style=filled, fillcolor=lightyellow];
+    
+    EnterPIN [label="Şifrenizi Girin", shape=parallelogram];
+    IsPINCorrect [label="Şifre Doğru mu?", shape=diamond, style=filled, fillcolor=lightyellow];
+    WrongPIN [label="Hatalı Şifre Uyarısı\nDeneme Hakkı Azalt"];
+    IsTriesLeft [label="Deneme Hakkı\nVar mı?", shape=diamond, style=filled, fillcolor=lightyellow];
+    BlockCard [label="Kart Bloke Edildi", style=filled, fillcolor=lightcoral];
+    
+    MainMenu [label="Ana Menüyü Göster\n1.Bakiye 2.Para Çek\n3.Para Yatır 4.Altın Al 5.Çıkış", shape=parallelogram];
+    UserChoice [label="İşlem Seçimi", shape=diamond, style=filled, fillcolor=lightyellow];
+    
+    ShowBalance [label="Bakiye Görüntüle"];
+    Withdraw [label="Para Çekme İşlemi"];
+    Deposit [label="Para Yatırma İşlemi"];
+    
+    BuyGold_Start [label="Altın Satın Al"];
+    GetGoldPrice [label="Anlık Altın Fiyatını Çek"];
+    AskGoldAmount [label="Gram Miktarını Sor", shape=parallelogram];
+    CalculateTotal [label="Toplam Tutarı Hesapla"];
+    ConfirmPurchase [label="Alımı Onayla", shape=diamond, style=filled, fillcolor=lightyellow];
+    IsBalanceSufficient_Gold [label="Bakiye Yeterli mi?", shape=diamond, style=filled, fillcolor=lightyellow];
+    DebitAccount_Gold [label="Hesaptan Tutarı Düş"];
+    DispenseGold [label="Altını Teslim Et", shape=parallelogra, style=filled, fillcolor=lightgreenm];
+    InsufficientFunds_Gold [label="Yetersiz Bakiye", style=filled, fillcolor=lightcoral];
+    
+    EjectCard [label="Kartı İade Et"];
+    End [label="Bitir", shape=ellipse, style=filled, fillcolor=lightblue];
+
+    // Akış bağlantıları
+    Start -> InsertCard -> ReadCard -> FindAccount -> IsAccountFound;
+    IsAccountFound -> EnterPIN [label="Evet"];
+    IsAccountFound -> EjectCard [label="Hayır"];
+    
+    EnterPIN -> IsPINCorrect;
+    IsPINCorrect -> MainMenu [label="Evet"];
+    IsPINCorrect -> WrongPIN [label="Hayır"];
+    WrongPIN -> IsTriesLeft;
+    IsTriesLeft -> EnterPIN [label="Evet"];
+    IsTriesLeft -> BlockCard [label="Hayır"];
+    BlockCard -> EjectCard;
+    
+    MainMenu -> UserChoice;
+    UserChoice -> ShowBalance [label="1: Bakiye"];
+    UserChoice -> Withdraw [label="2: Para Çek"];
+    UserChoice -> Deposit [label="3: Para Yatır"];
+    UserChoice -> BuyGold_Start [label="4: Altın Al"];
+    UserChoice -> EjectCard [label="5: Çıkış"];
+    ShowBalance -> MainMenu;
+    Withdraw -> MainMenu;
+    Deposit -> MainMenu;
+    
+    // Altın Satın Alma Alt Akışı
+    BuyGold_Start -> GetGoldPrice -> AskGoldAmount -> CalculateTotal -> ConfirmPurchase;
+    ConfirmPurchase -> IsBalanceSufficient_Gold [label="Evet"];
+    ConfirmPurchase -> MainMenu [label="Hayır"];
+    IsBalanceSufficient_Gold -> DebitAccount_Gold [label="Evet"];
+    IsBalanceSufficient_Gold -> InsufficientFunds_Gold [label="Hayır"];
+    DebitAccount_Gold -> DispenseGold -> MainMenu;
+    InsufficientFunds_Gold -> MainMenu;
+    
+    EjectCard -> End;
+}
+
+
+
+
+
+
+Bu dot kodunu biraz daha detaylandır mesela kalan hakkını da koda ekleyebiliriz birde asla siyah kullanma
+
+
+
+Düşünme sürecini göster
+Anlaşıldı. İsteğiniz üzerine, DOT kodunu daha detaylı hale getiriyor, özellikle şifre deneme hakkı mantığını daha belirginleştiriyor ve asla siyah renk kullanmadan daha modern ve anlaşılır bir renk paletiyle akış şemasını yeniden oluşturuyorum.
+
+Yapılan Detaylandırmalar ve İyileştirmeler:
+Renk Paleti: Siyah renk tamamen kaldırıldı. Metinler, oklar ve çerçeveler için koyu bir gri tonu kullanıldı. Farklı işlem türleri (giriş/çıkış, karar, hata, başarı) için modern ve birbirinden ayrışan renkler seçildi.
+
+Kalan Hak Detayı: Şifre giriş döngüsü daha açık hale getirildi. "Hatalı Şifre" adımının ne yaptığı ve "Deneme Hakkı Var mı?" kararının neye göre dallandığı etiketlerle belirginleştirildi. Başarısızlık yolu (kırmızı ok) ile başarı yolu (gri ok) görsel olarak ayrıldı.
+
+Gruplama (Sub-process): En önemli yeniliklerden biri olarak, "Altın Satın Alma" işlemi kendi içinde bir alt süreç olduğu için, bu adımlar görsel olarak bir kutu içine alındı (subgraph). Bu, ana menüdeki diğer işlemlerden ne kadar daha karmaşık olduğunu bir bakışta anlamanızı sağlar ve ana akışı daha temiz gösterir.
+
+Daha Açıklayıcı Etiketler: Düğümlerin ve okların üzerindeki etiketler, sürecin ne yaptığını daha iyi anlatacak şekilde güncellendi.
+
+Güncellenmiş Akış Şeması (Detaylandırılmış ve Renklendirilmiş DOT Dili)
+Bu kodu kopyalayıp online bir Graphviz editörüne (örneğin edotor.net) yapıştırdığınızda, daha detaylı ve estetik bir akış şeması elde edeceksiniz.
+
+Kod snippet'i
+
+digraph Detayli_ATM_Flowchart {
+    // --- GRAFİK AYARLARI ---
+    // Siyah renk kullanılmayacak. Ana renkler koyu gri ve mavi tonları.
+    graph [rankdir=TB, fontname="Helvetica", label="Altın İşlemli ATM Akış Şeması", fontcolor="#333333"];
+    node [shape=box, style="rounded,filled", fontname="Helvetica", color="#5D6D7E", fontcolor="#333333"];
+    edge [fontname="Helvetica", color="#5D6D7E", fontcolor="#424949"];
+
+    // --- DÜĞÜM TANIMLAMALARI VE RENKLENDİRME ---
+    // Başlangıç / Bitiş (Açık Yeşil ve Turuncu)
+    Start [label="Başla", shape=ellipse, fillcolor="#D5F5E3"];
+    End [label="Oturumu Bitir\nİyi Günler Dileriz", shape=ellipse, fillcolor="#FAE5D3"];
+
+    // Girdi / Çıktı (Açık Mavi)
+    InsertCard [label="Kullanıcı Kartı Takar", shape=parallelogram, fillcolor="#D6EAF8"];
+    EnterPIN [label="Kullanıcı Şifre Girer", shape=parallelogram, fillcolor="#D6EAF8"];
+    MainMenu [label="Ana Menüyü Göster\n1.Bakiye 2.Para Çek 3.Para Yatır 4.Altın Al 5.Çıkış", shape=parallelogram, fillcolor="#D6EAF8"];
+    EjectCard [label="Kart İade Edilir", shape=parallelogram, fillcolor="#D6EAF8"];
+    
+    // Karar Noktaları (Açık Sarı)
+    IsAccountFound [label="Kart ID'si Geçerli mi?", shape=diamond, fillcolor="#FCF3CF"];
+    IsPINCorrect [label="Şifre Doğru mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsTriesLeft [label="Deneme Hakkı > 0?", shape=diamond, fillcolor="#FCF3CF"];
+    UserChoice [label="İşlem Seçimi", shape=diamond, fillcolor="#FCF3CF"];
+
+    // Normal İşlemler (Açık Gri)
+    ReadCard [label="Kart ID'sini Oku"];
+    FindAccount [label="Hesap Veritabanında Aranır"];
+    WrongPIN [label="Hatalı Şifre!\nKalan deneme hakkı bir azaltıldı.", fillcolor="#F5B7B1"];
+    BlockCard [label="Kart Bloke Edildi\nKart İade Edilir", shape=cylinder, fillcolor="#E74C3C", fontcolor=white];
+    
+    ShowBalance [label="Bakiye Görüntüle"];
+    Withdraw [label="Para Çekme İşlemi"];
+    Deposit [label="Para Yatırma İşlemi"];
+
+
+    // --- ALTIN SATIN ALMA ALT SÜRECİ (Subgraph ile Gruplama) ---
+    subgraph cluster_gold_process {
+        label = "Altın Satın Alma Alt Akışı";
+        style = "rounded,filled";
+        fillcolor = "#E8F8F5"; // Alt süreç arka plan rengi
+        node [fillcolor="#D4E6F1"];
+
+        BuyGold_Start [label="Altın Satın Al Seçildi"];
+        GetGoldPrice [label="Anlık Altın Fiyatı Çekilir"];
+        AskGoldAmount [label="Kullanıcı Gram Miktarı Girer", shape=parallelogram];
+        CalculateTotal [label="Toplam Tutar Hesaplanır"];
+        ConfirmPurchase [label="Alım Onayı İstenir", shape=diamond, fillcolor="#FCF3CF"];
+        IsBalanceSufficient_Gold [label="Bakiye Yeterli mi?", shape=diamond, fillcolor="#FCF3CF"];
+        DebitAccount_Gold [label="Hesaptan Tutar Düşülür"];
+        DispenseGold [label="Altın Teslim Edilir", shape=parallelogram, fillcolor="#A9DFBF"];
+        InsufficientFunds_Gold [label="Yetersiz Bakiye Uyarısı", fillcolor="#F5B7B1"];
+        CancelPurchase [label="İşlem İptal Edildi"];
+    }
+
+
+    // --- AKIŞ BAĞLANTILARI ---
+    Start -> InsertCard -> ReadCard -> FindAccount -> IsAccountFound;
+    IsAccountFound -> EnterPIN [label="Evet"];
+    IsAccountFound -> EjectCard [label="Hayır", color="#C0392B", fontcolor="#C0392B"];
+    
+    // Şifre Doğrulama Döngüsü (Detaylandırılmış)
+    EnterPIN -> IsPINCorrect;
+    IsPINCorrect -> MainMenu [label="Doğrulandı"];
+    IsPINCorrect -> WrongPIN [label="Hatalı", color="#C0392B", fontcolor="#C0392B"];
+    WrongPIN -> IsTriesLeft;
+    IsTriesLeft -> EnterPIN [label="Evet"];
+    IsTriesLeft -> BlockCard [label="Hayır (Hakkı Bitti)", color="#C0392B", fontcolor="#C0392B"];
+    
+    // Ana Menü
+    MainMenu -> UserChoice;
+    UserChoice -> ShowBalance [label="1"];
+    UserChoice -> Withdraw [label="2"];
+    UserChoice -> Deposit [label="3"];
+    UserChoice -> BuyGold_Start [label="4"];
+    UserChoice -> EjectCard [label="5"];
+    ShowBalance -> MainMenu;
+    Withdraw -> MainMenu;
+    Deposit -> MainMenu;
+    
+    // Altın Satın Alma Akışı
+    BuyGold_Start -> GetGoldPrice -> AskGoldAmount -> CalculateTotal -> ConfirmPurchase;
+    ConfirmPurchase -> IsBalanceSufficient_Gold [label="Evet"];
+    ConfirmPurchase -> CancelPurchase [label="Hayır", color="#C0392B", fontcolor="#C0392B"];
+    IsBalanceSufficient_Gold -> DebitAccount_Gold [label="Evet"];
+    IsBalanceSufficient_Gold -> InsufficientFunds_Gold [label="Hayır", color="#C0392B", fontcolor="#C0392B"];
+    DebitAccount_Gold -> DispenseGold -> MainMenu;
+    InsufficientFunds_Gold -> MainMenu;
+    CancelPurchase -> MainMenu;
+
+    // Çıkış
+    BlockCard -> End;
+    EjectCard -> End;
+}
+
+
+
+
+
+
+şifre girme hakkı en fazla 4 olsun bu şekilde iki istediğim formatıda düzenler misin?
+
+
+
+Düşünme sürecini göster
+Anlaşıldı. Şifre deneme hakkını 4'e çıkararak hem pseudocode'u hem de DOT dilindeki akış şemasını isteğiniz doğrultusunda güncelliyorum.
+
+Değişiklikleri her iki formatta da net bir şekilde görebilirsiniz.
+
+1. Güncellenmiş Pseudocode
+Pseudocode'da, KimlikDogrula prosedürü içindeki başlangıç değeri ve ilgili uyarı mesajı güncellenmiştir. Değişiklikleri // GÜNCELLENDİ yorumuyla işaretledim.
+
+Plaintext
+
+// ========================================================================
+// ALGORİTMA: AltinIslemli_ATM_Sistemi (4 Deneme Haklı)
+// AMAÇ: Standart bankacılık işlemlerine ek olarak, kullanıcının
+//       hesabından anlık kur ile altın satın alabilmesini sağlayan
+//       güvenli bir ATM yazılımı mantığı oluşturmak.
+// ========================================================================
+
+BAŞLA
+
+  // ... (TEMEL VERİ YAPILARI ve ANA SİSTEM DÖNGÜSÜ kısımları aynı) ...
+
+  // --------------------------------------------------------------------
+  // 3. YARDIMCI PROSEDÜRLER
+  // --------------------------------------------------------------------
+
+  PROSEDÜR KimlikDogrula(Hesap):
+    SifreDenemeHakki = 4 // GÜNCELLENDİ: Deneme hakkı 4 olarak ayarlandı.
+    SÜRECE SifreDenemeHakki > 0:
+      GirilenSifre = KULLANICIDAN_AL("Lütfen 4 haneli şifrenizi girin: ")
+      GirilenSifreHash = HashFonksiyonu(GirilenSifre)
+      
+      EĞER GirilenSifreHash == Hesap.SifreHash:
+        RETURN TRUE
+      DEĞİLSE:
+        SifreDenemeHakki = SifreDenemeHakki - 1
+        EKRANA_YAZ("Hatalı şifre. Kalan deneme hakkı: " + SifreDenemeHakki)
+      BİTİR EĞER
+    BİTİR SÜRECE
+    
+    // GÜNCELLENDİ: Uyarı mesajı 4 denemeye göre güncellendi.
+    EKRANA_YAZ("Şifre 4 kez hatalı girildi. Güvenlik nedeniyle kartınız bloke edilmiştir.")
+    RETURN FALSE
+  BİTİR PROSEDÜR
+
+  PROSEDÜR IslemMenusu(Hesap):
+    // ... (Bu prosedürde değişiklik yok) ...
+  BİTİR PROSEDÜR
+
+  PROSEDÜR BakiyeGoster(Hesap):
+    // ... (Bu prosedürde değişiklik yok) ...
+  BİTİR PROSEDÜR
+
+  PROSEDÜR ParaCek(Hesap):
+    // ... (Bu prosedürde değişiklik yok) ...
+  BİTİR PROSEDÜR
+
+  PROSEDÜR AltinSatinAl(Hesap):
+    // ... (Bu prosedürde değişiklik yok) ...
+  BİTİR PROSEDÜR
+
+BİTİR
+2. Güncellenmiş Akış Şeması (DOT Dili)
+DOT dilindeki akış şemasının görsel yapısı, deneme hakkının 3 veya 4 olmasından etkilenmez çünkü döngü mantığı (IsTriesLeft -> EnterPIN) genel bir yapıdır. Ancak, şemayı daha açıklayıcı kılmak ve isteğinizi yansıtmak için ilgili bölüme bir yorum ekledim ve kodun tam, doğru halini tekrar sunuyorum.
+
+Kod snippet'i
+
+digraph Detayli_ATM_Flowchart_v2 {
+    // --- GRAFİK AYARLARI ---
+    graph [rankdir=TB, fontname="Helvetica", label="Altın İşlemli ATM Akış Şeması (4 Deneme Hakkı)", fontcolor="#333333"];
+    node [shape=box, style="rounded,filled", fontname="Helvetica", color="#5D6D7E", fontcolor="#333333"];
+    edge [fontname="Helvetica", color="#5D6D7E", fontcolor="#424949"];
+
+    // --- DÜĞÜM TANIMLAMALARI VE RENKLENDİRME ---
+    // Başlangıç / Bitiş
+    Start [label="Başla", shape=ellipse, fillcolor="#D5F5E3"];
+    End [label="Oturumu Bitir\nİyi Günler Dileriz", shape=ellipse, fillcolor="#FAE5D3"];
+
+    // Girdi / Çıktı
+    InsertCard [label="Kullanıcı Kartı Takar", shape=parallelogram, fillcolor="#D6EAF8"];
+    EnterPIN [label="Kullanıcı Şifre Girer", shape=parallelogram, fillcolor="#D6EAF8"];
+    MainMenu [label="Ana Menüyü Göster\n1.Bakiye 2.Para Çek 3.Para Yatır 4.Altın Al 5.Çıkış", shape=parallelogram, fillcolor="#D6EAF8"];
+    EjectCard [label="Kart İade Edilir", shape=parallelogram, fillcolor="#D6EAF8"];
+    
+    // Karar Noktaları
+    IsAccountFound [label="Kart ID'si Geçerli mi?", shape=diamond, fillcolor="#FCF3CF"];
+    IsPINCorrect [label="Şifre Doğru mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsTriesLeft [label="Deneme Hakkı > 0?", shape=diamond, fillcolor="#FCF3CF"];
+    UserChoice [label="İşlem Seçimi", shape=diamond, fillcolor="#FCF3CF"];
+
+    // Normal İşlemler
+    ReadCard [label="Kart ID'sini Oku"];
+    FindAccount [label="Hesap Veritabanında Aranır"];
+    WrongPIN [label="Hatalı Şifre!\nKalan deneme hakkı bir azaltıldı.", fillcolor="#F5B7B1"];
+    BlockCard [label="Kart Bloke Edildi\nKart İade Edilir", shape=cylinder, fillcolor="#E74C3C", fontcolor=white];
+    
+    ShowBalance [label="Bakiye Görüntüle"];
+    Withdraw [label="Para Çekme İşlemi"];
+    Deposit [label="Para Yatırma İşlemi"];
+
+
+    // --- ALTIN SATIN ALMA ALT SÜRECİ ---
+    subgraph cluster_gold_process {
+        label = "Altın Satın Alma Alt Akışı";
+        style = "rounded,filled";
+        fillcolor = "#E8F8F5";
+        node [fillcolor="#D4E6F1"];
+
+        BuyGold_Start [label="Altın Satın Al Seçildi"];
+        GetGoldPrice [label="Anlık Altın Fiyatı Çekilir"];
+        AskGoldAmount [label="Kullanıcı Gram Miktarı Girer", shape=parallelogram];
+        CalculateTotal [label="Toplam Tutar Hesaplanır"];
+        ConfirmPurchase [label="Alım Onayı İstenir", shape=diamond, fillcolor="#FCF3CF"];
+        IsBalanceSufficient_Gold [label="Bakiye Yeterli mi?", shape=diamond, fillcolor="#FCF3CF"];
+        DebitAccount_Gold [label="Hesaptan Tutar Düşülür"];
+        DispenseGold [label="Altın Teslim Edilir", shape=parallelogram, fillcolor="#A9DFBF"];
+        InsufficientFunds_Gold [label="Yetersiz Bakiye Uyarısı", fillcolor="#F5B7B1"];
+        CancelPurchase [label="İşlem İptal Edildi"];
+    }
+
+
+    // --- AKIŞ BAĞLANTILARI ---
+    Start -> InsertCard -> ReadCard -> FindAccount -> IsAccountFound;
+    IsAccountFound -> EnterPIN [label="Evet"];
+    IsAccountFound -> EjectCard [label="Hayır", color="#C0392B", fontcolor="#C0392B"];
+    
+    // Şifre Doğrulama Döngüsü (Maksimum 4 deneme ile çalışır)
+    EnterPIN -> IsPINCorrect;
+    IsPINCorrect -> MainMenu [label="Doğrulandı"];
+    IsPINCorrect -> WrongPIN [label="Hatalı", color="#C0392B", fontcolor="#C0392B"];
+    WrongPIN -> IsTriesLeft;
+    IsTriesLeft -> EnterPIN [label="Evet"];
+    IsTriesLeft -> BlockCard [label="Hayır (Hakkı Bitti)", color="#C0392B", fontcolor="#C0392B"];
+    
+    // Ana Menü
+    MainMenu -> UserChoice;
+    UserChoice -> ShowBalance [label="1"];
+    UserChoice -> Withdraw [label="2"];
+    UserChoice -> Deposit [label="3"];
+    UserChoice -> BuyGold_Start [label="4"];
+    UserChoice -> EjectCard [label="5"];
+    ShowBalance -> MainMenu;
+    Withdraw -> MainMenu;
+    Deposit -> MainMenu;
+    
+    // Altın Satın Alma Akışı
+    BuyGold_Start -> GetGoldPrice -> AskGoldAmount -> CalculateTotal -> ConfirmPurchase;
+    ConfirmPurchase -> IsBalanceSufficient_Gold [label="Evet"];
+    ConfirmPurchase -> CancelPurchase [label="Hayır", color="#C0392B", fontcolor="#C0392B"];
+    IsBalanceSufficient_Gold -> DebitAccount_Gold [label="Evet"];
+    IsBalanceSufficient_Gold -> InsufficientFunds_Gold [label="Hayır", color="#C0392B", fontcolor="#C0392B"];
+    DebitAccount_Gold -> DispenseGold -> MainMenu;
+    InsufficientFunds_Gold -> MainMenu;
+    CancelPurchase -> MainMenu;
+
+    // Çıkış
+    BlockCard -> End;
+    EjectCard -> End;
+}
+
+
+
+
+
+
+
+psuedocodenin tümünü ver ve akış şemasına bir adet şifre hakkını gösteren bölüm ekle
+
+
+
+Düşünme sürecini göster
+Anlaştık. Pseudocode'un baştan sona tam halini ve akış şemasına da istediğiniz "şifre hakkını gösteren bölümü" ekleyerek her iki formatı da aşağıda sunuyorum.
+
+Akış şemasında, şifre deneme döngüsüne girmeden önce deneme hakkının kaç olarak ayarlandığını gösteren yeni bir işlem kutusu ekledim. Bu, döngünün başlangıç koşulunu görsel olarak çok daha net hale getirir.
+
+1. ATM Algoritması (Pseudocode'un Tam Hali)
+Plaintext
+
+// ========================================================================
+// ALGORİTMA: AltinIslemli_ATM_Sistemi (4 Deneme Haklı)
+// AMAÇ: Standart bankacılık işlemlerine ek olarak, kullanıcının
+//       hesabından anlık kur ile altın satın alabilmesini sağlayan
+//       güvenli bir ATM yazılımı mantığı oluşturmak.
+// ========================================================================
+
+BAŞLA
+
+  // --------------------------------------------------------------------
+  // 1. TEMEL VERİ YAPILARI
+  // --------------------------------------------------------------------
+  YAPI MusteriHesabi:
+    KartID: METİN
+    SifreHash: METİN // Güvenlik için şifre açık metin olarak tutulmaz
+    Bakiye: ONDALIKLI SAYI
+  BİTİR YAPI
+
+  // Sembolik bir veritabanı
+  Veritabani = [ MusteriHesabi1, MusteriHesabi2, ... ]
+
+  // --------------------------------------------------------------------
+  // 2. ANA SİSTEM DÖNGÜSÜ
+  // --------------------------------------------------------------------
+  ANA KISIM:
+    SÜRECE TRUE: // ATM sürekli çalışır durumda
+      EKRANA_YAZ("Lütfen kartınızı takınız.")
+      GirilenKartID = KART_OKUYUCUDAN_OKU()
+      
+      Hesap = VeritabanindanHesapBul(GirilenKartID)
+      
+      EĞER Hesap BULUNDUYSA:
+        DogrulamaBasarili = KimlikDogrula(Hesap)
+        EĞER DogrulamaBasarili == TRUE:
+          IslemMenusu(Hesap) // Kullanıcıyı işlem menüsüne yönlendir
+        BİTİR EĞER
+      DEĞİLSE:
+        EKRANA_YAZ("Geçersiz kart. Kart iade ediliyor.")
+      BİTİR EĞER
+      
+      EKRANA_YAZ("İyi günler dileriz. Lütfen kartınızı alınız.")
+    BİTİR SÜRECE
+  BİTİR ANA KISIM
+
+  // --------------------------------------------------------------------
+  // 3. YARDIMCI PROSEDÜRLER
+  // --------------------------------------------------------------------
+
+  PROSEDÜR KimlikDogrula(Hesap):
+    SifreDenemeHakki = 4 // Deneme hakkı 4 olarak ayarlandı.
+    SÜRECE SifreDenemeHakki > 0:
+      GirilenSifre = KULLANICIDAN_AL("Lütfen 4 haneli şifrenizi girin: ")
+      GirilenSifreHash = HashFonksiyonu(GirilenSifre) // Girilen şifreyi hash'le
+      
+      EĞER GirilenSifreHash == Hesap.SifreHash:
+        RETURN TRUE // Başarılı giriş
+      DEĞİLSE:
+        SifreDenemeHakki = SifreDenemeHakki - 1
+        EKRANA_YAZ("Hatalı şifre. Kalan deneme hakkı: " + SifreDenemeHakki)
+      BİTİR EĞER
+    BİTİR SÜRECE
+    
+    EKRANA_YAZ("Şifre 4 kez hatalı girildi. Güvenlik nedeniyle kartınız bloke edilmiştir.")
+    RETURN FALSE // Başarısız giriş
+  BİTİR PROSEDÜR
+
+  PROSEDÜR IslemMenusu(Hesap):
+    OturumAcik = TRUE
+    SÜRECE OturumAcik:
+      EKRANA_YAZ("\n--- ANA MENÜ ---")
+      EKRANA_YAZ("1. Bakiye Görüntüle")
+      EKRANA_YAZ("2. Para Çek")
+      EKRANA_YAZ("3. Para Yatır")
+      EKRANA_YAZ("4. Altın Satın Al")
+      EKRANA_YAZ("5. Çıkış")
+      Secim = KULLANICIDAN_AL_SAYI("Lütfen yapmak istediğiniz işlemi seçin: ")
+
+      EĞER Secim == 1: BakiyeGoster(Hesap)
+      DEĞİLSE EĞER Secim == 2: ParaCek(Hesap)
+      DEĞİLSE EĞER Secim == 3: ParaYatir(Hesap)
+      DEĞİLSE EĞER Secim == 4: AltinSatinAl(Hesap)
+      DEĞİLSE EĞER Secim == 5:
+        OturumAcik = FALSE // Döngüyü sonlandır
+      DEĞİLSE:
+        EKRANA_YAZ("Geçersiz seçim.")
+      BİTİR EĞER
+    BİTİR SÜRECE
+  BİTİR PROSEDÜR
+
+  PROSEDÜR BakiyeGoster(Hesap):
+    EKRANA_YAZ("Mevcut Bakiyeniz: " + Hesap.Bakiye + " TL")
+  BİTİR PROSEDÜR
+
+  PROSEDÜR ParaCek(Hesap):
+    Miktar = KULLANICIDAN_AL_SAYI("Çekmek istediğiniz tutarı girin: ")
+    EĞER Miktar <= Hesap.Bakiye:
+      Hesap.Bakiye = Hesap.Bakiye - Miktar
+      PARA_BOLMESINDEN_VER(Miktar)
+      EKRANA_YAZ("İşlem başarılı. Yeni bakiyeniz: " + Hesap.Bakiye + " TL")
+    DEĞİLSE:
+      EKRANA_YAZ("Yetersiz bakiye.")
+    BİTİR EĞER
+  BİTİR PROSEDÜR
+  
+  PROSEDÜR ParaYatir(Hesap):
+      Miktar = PARA_YATIRMA_BOLMESINDEN_OKU()
+      Hesap.Bakiye = Hesap.Bakiye + Miktar
+      EKRANA_YAZ("İşlem başarılı. Yeni bakiyeniz: " + Hesap.Bakiye + " TL")
+  BİTİR PROSEDÜR
+
+  PROSEDÜR AltinSatinAl(Hesap):
+    AnlikGramFiyati = DIŞ_SERVİSTEN_ALTIN_FİYATI_GETİR()
+    EKRANA_YAZ("Anlık Altın Fiyatı (1 Gram): " + AnlikGramFiyati + " TL")
+    
+    MiktarGram = KULLANICIDAN_AL_SAYI("Kaç gram altın almak istersiniz?: ")
+    ToplamTutar = MiktarGram * AnlikGramFiyati
+    
+    EKRANA_YAZ(MiktarGram + " gram altın için ödenecek tutar: " + ToplamTutar + " TL. Onaylıyor musunuz? (E/H)")
+    Onay = KULLANICIDAN_AL()
+    
+    EĞER Onay == "E" VEYA Onay == "e":
+      EĞER ToplamTutar <= Hesap.Bakiye:
+        Hesap.Bakiye = Hesap.Bakiye - ToplamTutar
+        ALTIN_BOLMESINDEN_VER(MiktarGram)
+        EKRANA_YAZ("Altın alım işlemi başarılı. Yeni bakiyeniz: " + Hesap.Bakiye + " TL")
+      DEĞİLSE:
+        EKRANA_YAZ("Yetersiz bakiye. İşlem iptal edildi.")
+      BİTİR EĞER
+    DEĞİLSE:
+      EKRANA_YAZ("İşlem iptal edildi.")
+    BİTİR EĞER
+  BİTİR PROSEDÜR
+
+BİTİR
+2. Akış Şeması (Şifre Hakkı Göstergeli DOT Dili)
+Kod snippet'i
+
+digraph Detayli_ATM_Flowchart_v3 {
+    // --- GRAFİK AYARLARI ---
+    graph [rankdir=TB, fontname="Helvetica", label="Altın İşlemli ATM Akış Şeması (4 Deneme Hakkı)", fontcolor="#333333"];
+    node [shape=box, style="rounded,filled", fontname="Helvetica", color="#5D6D7E", fontcolor="#333333"];
+    edge [fontname="Helvetica", color="#5D6D7E", fontcolor="#424949"];
+
+    // --- DÜĞÜM TANIMLAMALARI VE RENKLENDİRME ---
+    Start [label="Başla", shape=ellipse, fillcolor="#D5F5E3"];
+    End [label="Oturumu Bitir\nİyi Günler Dileriz", shape=ellipse, fillcolor="#FAE5D3"];
+    InsertCard [label="Kullanıcı Kartı Takar", shape=parallelogram, fillcolor="#D6EAF8"];
+    EnterPIN [label="Kullanıcı Şifre Girer", shape=parallelogram, fillcolor="#D6EAF8"];
+    MainMenu [label="Ana Menüyü Göster\n1.Bakiye 2.Para Çek 3.Para Yatır 4.Altın Al 5.Çıkış", shape=parallelogram, fillcolor="#D6EAF8"];
+    EjectCard [label="Kart İade Edilir", shape=parallelogram, fillcolor="#D6EAF8"];
+    IsAccountFound [label="Kart ID'si Geçerli mi?", shape=diamond, fillcolor="#FCF3CF"];
+    IsPINCorrect [label="Şifre Doğru mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsTriesLeft [label="Deneme Hakkı > 0?", shape=diamond, fillcolor="#FCF3CF"];
+    UserChoice [label="İşlem Seçimi", shape=diamond, fillcolor="#FCF3CF"];
+    ReadCard [label="Kart ID'sini Oku"];
+    FindAccount [label="Hesap Veritabanında Aranır"];
+    
+    // YENİ DÜĞÜM: Şifre hakkını görsel olarak başlatan bölüm
+    InitializeTries [label="Deneme Hakkı = 4\nOlarak Ayarlanır", fillcolor="#E8DAEF"];
+
+    WrongPIN [label="Hatalı Şifre!\nKalan deneme hakkı bir azaltıldı.", fillcolor="#F5B7B1"];
+    BlockCard [label="Kart Bloke Edildi\nKart İade Edilir", shape=cylinder, fillcolor="#E74C3C", fontcolor=white];
+    ShowBalance [label="Bakiye Görüntüle"];
+    Withdraw [label="Para Çekme İşlemi"];
+    Deposit [label="Para Yatırma İşlemi"];
+
+    // --- ALTIN SATIN ALMA ALT SÜRECİ ---
+    subgraph cluster_gold_process {
+        label = "Altın Satın Alma Alt Akışı";
+        style = "rounded,filled";
+        fillcolor = "#E8F8F5";
+        node [fillcolor="#D4E6F1"];
+        BuyGold_Start [label="Altın Satın Al Seçildi"];
+        GetGoldPrice [label="Anlık Altın Fiyatı Çekilir"];
+        AskGoldAmount [label="Kullanıcı Gram Miktarı Girer", shape=parallelogram];
+        CalculateTotal [label="Toplam Tutar Hesaplanır"];
+        ConfirmPurchase [label="Alım Onayı İstenir", shape=diamond, fillcolor="#FCF3CF"];
+        IsBalanceSufficient_Gold [label="Bakiye Yeterli mi?", shape=diamond, fillcolor="#FCF3CF"];
+        DebitAccount_Gold [label="Hesaptan Tutar Düşülür"];
+        DispenseGold [label="Altın Teslim Edilir", shape=parallelogram, fillcolor="#A9DFBF"];
+        InsufficientFunds_Gold [label="Yetersiz Bakiye Uyarısı", fillcolor="#F5B7B1"];
+        CancelPurchase [label="İşlem İptal Edildi"];
+    }
+
+    // --- AKIŞ BAĞLANTILARI ---
+    Start -> InsertCard -> ReadCard -> FindAccount -> IsAccountFound;
+    IsAccountFound -> EjectCard [label="Hayır", color="#C0392B", fontcolor="#C0392B"];
+    
+    // GÜNCELLENMİŞ AKIŞ: Şifre döngüsü, hakkı başlatan düğüm ile başlar
+    IsAccountFound -> InitializeTries [label="Evet"];
+    InitializeTries -> EnterPIN;
+    
+    EnterPIN -> IsPINCorrect;
+    IsPINCorrect -> MainMenu [label="Doğrulandı"];
+    IsPINCorrect -> WrongPIN [label="Hatalı", color="#C0392B", fontcolor="#C0392B"];
+    WrongPIN -> IsTriesLeft;
+    IsTriesLeft -> EnterPIN [label="Evet"];
+    IsTriesLeft -> BlockCard [label="Hayır (Hakkı Bitti)", color="#C0392B", fontcolor="#C0392B"];
+    
+    MainMenu -> UserChoice;
+    UserChoice -> ShowBalance [label="1"];
+    UserChoice -> Withdraw [label="2"];
+    UserChoice -> Deposit [label="3"];
+    UserChoice -> BuyGold_Start [label="4"];
+    UserChoice -> EjectCard [label="5"];
+    ShowBalance -> MainMenu;
+    Withdraw -> MainMenu;
+    Deposit -> MainMenu;
+    
+    BuyGold_Start -> GetGoldPrice -> AskGoldAmount -> CalculateTotal -> ConfirmPurchase;
+    ConfirmPurchase -> IsBalanceSufficient_Gold [label="Evet"];
+    ConfirmPurchase -> CancelPurchase [label="Hayır", color="#C0392B", fontcolor="#C0392B"];
+    IsBalanceSufficient_Gold -> DebitAccount_Gold [label="Evet"];
+    IsBalanceSufficient_Gold -> InsufficientFunds_Gold [label="Hayır", color="#C0392B", fontcolor="#C0392B"];
+    DebitAccount_Gold -> DispenseGold -> MainMenu;
+    InsufficientFunds_Gold -> MainMenu;
+    CancelPurchase -> MainMenu;
+
+    BlockCard -> End;
+    EjectCard -> End;
+}
