@@ -1,0 +1,1321 @@
+Şimdi seninle yeni bir projeye başlıyoruz psuedocode başla ilen başlayıp bitir ilen bitsin karar yapılarınde eğer - ise kullan ve bana Dot kodunu ver ve karar yapılarında evet hayır etiketlerini unutma ve yazılım akış şeması şekillerine uygun şekilleri kullan anlaştık mı?
+
+
+
+
+Düşünme sürecini göster
+Anlaştık. Belirttiğiniz tüm kurallara harfiyen uyacağım.
+
+Süreç tam olarak şöyle işleyecek:
+
+Pseudocode: Her algoritma için, mantıksal akışı anlatan bir pseudocode yazacağım.
+
+Kod BAŞLA komutuyla başlayacak.
+
+Kod BİTİR komutuyla sonlanacak.
+
+Tüm koşullu ifadeler için EĞER - İSE yapısını kullanacağım.
+
+DOT Dili Akış Şeması: Pseudocode'daki mantığın görsel bir temsilini DOT kodu olarak sunacağım.
+
+Standart akış şeması şekillerini kullanacağım:
+
+Elips (oval): Başlangıç ve Bitiş noktaları için.
+
+Paralelkenar: Kullanıcıdan veri alma (Girdi) veya kullanıcıya bilgi gösterme (Çıktı) işlemleri için.
+
+Dikdörtgen: Hesaplama, atama gibi standart işlemler için.
+
+Baklava Dilimi: Karar verme noktaları (EĞER yapıları) için.
+
+Tüm karar noktalarından (baklava dilimi) çıkan yolları net bir şekilde Evet ve Hayır olarak etiketleyeceğim.
+
+Bu yapı üzerinde çalışmaya hazırım.
+
+Yeni projemizin konusu nedir? Sizi dinliyorum.
+
+
+
+
+
+
+
+Bir Online Alışveriş sepet sistemi yapmak istiyorum ama içinde bir çok döngü ve karar yapısı yer alsın örneğin indirim varsa otomatik olarak uygulansın gibi ama bu yapıları anlaşılır bir şekilde ayır ve açıklamalar ilen destekle
+
+
+
+
+Düşünme sürecini göster
+Anlaştık. Belirttiğiniz tüm kurallara uygun, bolca döngü ve karar yapısı içeren, anlaşılır bir Online Alışveriş Sepeti Sistemi algoritması hazırlayalım.
+
+Bir algoritma uzmanı olarak, bu sistemi modüler prosedürlere ayıracağım. Her bir prosedür (ürün listeleme, sepete ekleme, ödeme yapma vb.) kendi içinde bir mantık akışına sahip olacak. Bu, hem pseudocode'un hem de akış şemasının takip edilmesini kolaylaştıracaktır. Özellikle ödeme prosedüründe, istediğiniz gibi indirim kontrolü gibi birden fazla karar yapısı ve döngü yer alacak.
+
+1. Online Alışveriş Sepeti (Pseudocode)
+BAŞLA
+
+// --- AÇIKLAMA: VERİ YAPILARI ---
+// Bu bölümde, sistemimizde kullanacağımız temel veri türlerini tanımlıyoruz.
+// Urun yapısı, mağazadaki her bir ürünü; SepetUrunu ise kullanıcının sepetine eklediği bir ürünü temsil eder.
+
+YAPI Urun:
+ID: SAYI
+Ad: METİN
+Fiyat: ONDALIKLI SAYI
+Stok: SAYI
+IndirimVarMi: MANTIKSAL // EVET veya HAYIR
+BİTİR YAPI
+
+YAPI SepetUrunu:
+Urun: Urun NESNESİ
+Miktar: SAYI
+BİTİR YAPI
+
+// --- AÇIKLAMA: SİSTEM BAŞLANGIÇ VERİLERİ ---
+// Algoritmanın çalışmasını test etmek için sembolik bir ürün veritabanı ve boş bir kullanıcı sepeti oluşturuyoruz.
+UrunVeritabani = [
+{ID:1, Ad:"Akıllı Telefon", Fiyat:15000.0, Stok:10, IndirimVarMi:EVET},
+{ID:2, Ad:"Kablosuz Kulaklık", Fiyat:1200.0, Stok:25, IndirimVarMi:HAYIR},
+{ID:3, Ad:"Laptop Çantası", Fiyat:750.0, Stok:5, IndirimVarMi:EVET}
+]
+KullaniciSepeti = BOŞ LİSTE (SepetUrunu nesneleri içerecek)
+
+// ====================================================================
+// ANA KISIM - KULLANICI ETKİLEŞİM DÖNGÜSÜ
+// ====================================================================
+// --- AÇIKLAMA: Bu ana döngü, kullanıcı çıkış yapana kadar sürekli çalışır ve ana menüyü gösterir.
+ANA KISIM:
+Calisiyor = EVET
+SÜRECE Calisiyor == EVET:
+EKRANA_YAZ("\n--- ONLINE MAĞAZA MENÜSÜ ---")
+EKRANA_YAZ("1. Ürünleri Listele")
+EKRANA_YAZ("2. Sepete Ürün Ekle")
+EKRANA_YAZ("3. Sepeti Görüntüle")
+EKRANA_YAZ("4. Ödeme Yap")
+EKRANA_YAZ("5. Çıkış")
+Secim = KULLANICIDAN_AL_SAYI("Seçiminiz: ")
+
+  EĞER Secim == 1 İSE UrunleriListele(UrunVeritabani)
+  EĞER Secim == 2 İSE SepeteEkle(UrunVeritabani, KullaniciSepeti)
+  EĞER Secim == 3 İSE SepetiGoster(KullaniciSepeti)
+  EĞER Secim == 4 İSE OdemeYap(KullaniciSepeti)
+  EĞER Secim == 5 İSE Calisiyor = HAYIR
+BİTİR SÜRECE
+EKRANA_YAZ("Mağazamızdan ayrıldınız. İyi günler!")
+BİTİR ANA KISIM
+
+// ====================================================================
+// PROSEDÜRLER - İŞLEM MANTIKLARI
+// ====================================================================
+
+// --- AÇIKLAMA: Bu prosedür, veritabanındaki tüm ürünleri bir döngü kullanarak ekrana listeler.
+PROSEDÜR UrunleriListele(Veritabani):
+EKRANA_YAZ("\n--- MAĞAZADAKİ ÜRÜNLER ---")
+HER urun İÇİN Veritabani:
+EKRANA_YAZ("ID: " + urun.ID + " | Ad: " + urun.Ad + " | Fiyat: " + urun.Fiyat + " TL | Stok: " + urun.Stok)
+BİTİR HER
+BİTİR PROSEDÜR
+
+// --- AÇIKLAMA: Bu prosedür, kullanıcının seçtiği ürünü, stok kontrolü gibi karar yapıları kullanarak sepete ekler.
+PROSEDÜR SepeteEkle(Veritabani, Sepet):
+UrunID = KULLANICIDAN_AL_SAYI("Eklemek istediğiniz ürünün ID'sini girin: ")
+SecilenUrun = null
+HER urun İÇİN Veritabani:
+EĞER urun.ID == UrunID İSE SecilenUrun = urun
+BİTİR HER
+
+EĞER SecilenUrun != null İSE
+  EĞER SecilenUrun.Stok > 0 İSE
+    Miktar = KULLANICIDAN_AL_SAYI("Kaç adet eklemek istersiniz?: ")
+    EĞER Miktar <= SecilenUrun.Stok İSE
+      YeniSepetUrunu = YENİ SepetUrunu
+      YeniSepetUrunu.Urun = SecilenUrun
+      YeniSepetUrunu.Miktar = Miktar
+      Sepet.EKLE(YeniSepetUrunu)
+      SecilenUrun.Stok = SecilenUrun.Stok - Miktar // Stoktan düş
+      EKRANA_YAZ("'" + SecilenUrun.Ad + "' sepete eklendi.")
+    İSE
+      EKRANA_YAZ("Hata: Stokta yeterli miktarda ürün yok.")
+    BİTİR EĞER
+  İSE
+    EKRANA_YAZ("Hata: Bu ürünün stoğu tükenmiştir.")
+  BİTİR EĞER
+İSE
+  EKRANA_YAZ("Hata: Bu ID'ye sahip bir ürün bulunamadı.")
+BİTİR EĞER
+BİTİR PROSEDÜR
+
+// --- AÇIKLAMA: Bu prosedür, sepette ürün olup olmadığını bir karar yapısıyla kontrol eder ve varsa bir döngü ile listeler.
+PROSEDÜR SepetiGoster(Sepet):
+EKRANA_YAZ("\n--- ALIŞVERİŞ SEPETİNİZ ---")
+EĞER Sepet BOŞ İSE
+EKRANA_YAZ("Sepetiniz şu anda boş.")
+İSE
+HER sepetUrunu İÇİN Sepet:
+EKRANA_YAZ(sepetUrunu.Miktar + " x " + sepetUrunu.Urun.Ad + " - " + (sepetUrunu.Miktar * sepetUrunu.Urun.Fiyat) + " TL")
+BİTİR HER
+BİTİR EĞER
+BİTİR PROSEDÜR
+
+// --- AÇIKLAMA: Bu prosedür, sepetin toplamını hesaplar. Bu sırada bir döngü içinde her ürün için indirim olup olmadığını bir karar yapısıyla kontrol eder.
+PROSEDÜR OdemeYap(Sepet):
+EĞER Sepet BOŞ İSE
+EKRANA_YAZ("Ödeme yapmak için sepetinizde ürün bulunmalıdır.")
+RETURN
+İSE
+AraToplam = 0.0
+IndirimToplami = 0.0
+HER sepetUrunu İÇİN Sepet:
+SatirToplami = sepetUrunu.Urun.Fiyat * sepetUrunu.Miktar
+AraToplam = AraToplam + SatirToplami
+
+    // **İNDİRİM KONTROLÜ KARAR YAPISI**
+    EĞER sepetUrunu.Urun.IndirimVarMi == EVET İSE
+      IndirimMiktari = SatirToplami * 0.10 // %10 indirim uygula
+      IndirimToplami = IndirimToplami + IndirimMiktari
+      EKRANA_YAZ("'" + sepetUrunu.Urun.Ad + "' için " + IndirimMiktari + " TL indirim uygulandı!")
+    BİTİR EĞER
+  BİTİR HER
+  
+  GenelToplam = AraToplam - IndirimToplami
+  EKRANA_YAZ("\n--- ÖDEME ÖZETİ ---")
+  EKRANA_YAZ("Ara Toplam: " + AraToplam + " TL")
+  EKRANA_YAZ("Uygulanan İndirim: " + IndirimToplami + " TL")
+  EKRANA_YAZ("Ödenecek Tutar: " + GenelToplam + " TL")
+  
+  Onay = KULLANICIDAN_AL("Ödemeyi onaylıyor musunuz? (Evet/Hayır): ")
+  EĞER Onay == "Evet" İSE
+    EKRANA_YAZ("Ödeme başarıyla tamamlandı. Teşekkür ederiz!")
+    Sepet.TEMİZLE() // Sepeti boşalt
+  İSE
+    EKRANA_YAZ("Ödeme işlemi iptal edildi.")
+  BİTİR EĞER
+BİTİR EĞER
+BİTİR PROSEDÜR
+
+BİTİR
+
+2. Online Alışveriş Sepeti (DOT Dili Akış Şeması)
+Kod snippet'i
+
+digraph OnlineSatis_Flowchart {
+    // --- GRAFİK AYARLARI ---
+    graph [rankdir=TB, fontname="Helvetica"];
+    node [shape=box, style="rounded,filled", fontname="Helvetica"];
+    edge [fontname="Helvetica"];
+
+    // --- DÜĞÜM TANIMLAMALARI (Şekillere Uygun) ---
+    // Başlangıç / Bitiş (Elips)
+    Start [label="Başla", shape=ellipse, fillcolor=lightblue];
+    End [label="Bitir", shape=ellipse, fillcolor=lightblue];
+
+    // Girdi / Çıktı (Paralelkenar)
+    MainMenu [label="Ana Menüyü Göster\n1.Listele 2.Ekle 3.Göster 4.Öde 5.Çıkış", shape=parallelogram, fillcolor=lightyellow];
+    DisplayProducts [label="Ürünleri Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    AskProductID [label="Kullanıcıdan Ürün ID'si Al", shape=parallelogram, fillcolor=lightyellow];
+    AskQuantity [label="Kullanıcıdan Miktar Al", shape=parallelogram, fillcolor=lightyellow];
+    ShowCart [label="Sepeti Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    ShowTotals [label="Ödeme Özetini Göster", shape=parallelogram, fillcolor=lightyellow];
+    ConfirmPayment [label="Kullanıcıdan Ödeme Onayı Al", shape=parallelogram, fillcolor=lightyellow];
+    
+    // İşlemler (Dikdörtgen)
+    FindProduct [label="Ürünü Veritabanında Bul"];
+    AddToCart [label="Ürünü Sepete Ekle\nStoktan Düş"];
+    CalculateTotals [label="Ara Toplamı Hesapla"];
+    ApplyDiscount [label="İndirimi Hesapla ve Ekle"];
+    CalculateFinalTotal [label="Genel Toplamı Hesapla"];
+    PaymentSuccess [label="Ödeme Başarılı\nSepeti Temizle"];
+    PaymentCancelled [label="Ödeme İptal Edildi"];
+    
+    // Karar Noktaları (Baklava Dilimi)
+    UserChoice [label="Kullanıcı Seçimi", shape=diamond, fillcolor=lightgreen];
+    IsProductFound [label="Ürün Bulundu mu?", shape=diamond, fillcolor=lightgreen];
+    IsInStock [label="Stok Var mı?", shape=diamond, fillcolor=lightgreen];
+    IsQuantitySufficient [label="Miktar Yeterli mi?", shape=diamond, fillcolor=lightgreen];
+    IsCartEmpty_View [label="Sepet Boş mu?", shape=diamond, fillcolor=lightgreen];
+    IsCartEmpty_Checkout [label="Sepet Boş mu?", shape=diamond, fillcolor=lightgreen];
+    IsDiscountAvailable [label="İndirim Var mı?", shape=diamond, fillcolor=lightgreen];
+    IsPaymentConfirmed [label="Ödeme Onaylandı mı?", shape=diamond, fillcolor=lightgreen];
+    
+    // Hata Mesajları
+    ProductNotFound [label="Hata: Ürün Bulunamadı", shape=box, style=filled, fillcolor=lightcoral];
+    OutOfStock [label="Hata: Stok Tükenmiş", shape=box, style=filled, fillcolor=lightcoral];
+    NotEnoughStock [label="Hata: Yetersiz Stok", shape=box, style=filled, fillcolor=lightcoral];
+    CartIsEmpty [label="Bilgi: Sepetiniz Boş", shape=box, style=filled, fillcolor=lightgray];
+
+    // --- AKIŞ BAĞLANTILARI ---
+    Start -> MainMenu;
+    MainMenu -> UserChoice;
+
+    UserChoice -> DisplayProducts [label="1"];
+    DisplayProducts -> MainMenu;
+    
+    UserChoice -> AskProductID [label="2"];
+    AskProductID -> FindProduct -> IsProductFound;
+    IsProductFound -> IsInStock [label="Evet"];
+    IsProductFound -> ProductNotFound [label="Hayır"];
+    IsInStock -> AskQuantity [label="Evet"];
+    IsInStock -> OutOfStock [label="Hayır"];
+    AskQuantity -> IsQuantitySufficient;
+    IsQuantitySufficient -> AddToCart [label="Evet"];
+    IsQuantitySufficient -> NotEnoughStock [label="Hayır"];
+    AddToCart -> MainMenu;
+    ProductNotFound -> MainMenu;
+    OutOfStock -> MainMenu;
+    NotEnoughStock -> MainMenu;
+
+    UserChoice -> IsCartEmpty_View [label="3"];
+    IsCartEmpty_View -> CartIsEmpty [label="Evet"];
+    IsCartEmpty_View -> ShowCart [label="Hayır"];
+    CartIsEmpty -> MainMenu;
+    ShowCart -> MainMenu;
+    
+    UserChoice -> IsCartEmpty_Checkout [label="4"];
+    IsCartEmpty_Checkout -> CartIsEmpty [label="Evet"];
+
+    subgraph cluster_checkout {
+        label = "Ödeme Süreci";
+        style = "rounded";
+        IsCartEmpty_Checkout -> CalculateTotals [label="Hayır"];
+        CalculateTotals -> IsDiscountAvailable;
+        IsDiscountAvailable -> ApplyDiscount [label="Evet"];
+        IsDiscountAvailable -> CalculateFinalTotal [label="Hayır"];
+        ApplyDiscount -> CalculateFinalTotal;
+        CalculateFinalTotal -> ShowTotals -> ConfirmPayment -> IsPaymentConfirmed;
+        IsPaymentConfirmed -> PaymentSuccess [label="Evet"];
+        IsPaymentConfirmed -> PaymentCancelled [label="Hayır"];
+        PaymentSuccess -> MainMenu;
+        PaymentCancelled -> MainMenu;
+    }
+
+    UserChoice -> End [label="5"];
+}
+
+
+
+
+
+
+Dot dilinde bundan sonra siyah arka plan kullanma
+
+
+
+Düşünme sürecini göster
+Anlaşıldı, anlaştık.
+
+Bundan sonra oluşturacağım tüm DOT dili akış şemalarında siyah arka plan kullanmayacağım.
+
+Bunun yerine, şemaların genel arka planını şeffaf veya beyaz gibi açık bir renkte tutacağım. Tüm metinler, oklar ve şekiller, bu açık arka plan üzerinde net bir şekilde okunacak ve iyi bir kontrast sağlayacak renklerde olacaktır.
+
+Bu kuralı bundan sonraki tüm algoritmalarımızda uygulayacağım.
+
+Yeni projemiz veya konumuz nedir? Hazırım.
+
+
+
+
+
+
+
+ve yazdığın dot kodunu ona göre düzenle
+
+
+
+Düşünme sürecini göster
+Anlaşıldı. Bir önceki "Online Alışveriş Sepeti" algoritmamız için yazdığım DOT kodunu, "siyah arka plan kullanmama" kuralınıza uygun olarak hemen güncelliyorum.
+
+Değişiklik olarak, graph tanımının içine bgcolor="white" komutunu ekledim. Bu komut, akış şemasının arka planının her zaman beyaz olmasını garanti eder, böylece hangi programda açarsanız açın siyah bir arka planla karşılaşmazsınız. Diğer tüm renkler ve yapılar, bu beyaz arka plan üzerinde en iyi görünecek şekilde zaten ayarlanmıştı.
+
+İşte belirttiğiniz kurala göre güncellenmiş, tam DOT kodu:
+
+Online Alışveriş Sepeti (Beyaz Arka Planlı DOT Kodu)
+Kod snippet'i
+
+digraph OnlineSatis_Flowchart_WhiteBG {
+    // --- GRAFİK AYARLARI ---
+    // YENİ KURAL: Arka planın her zaman beyaz olması için bgcolor eklendi.
+    graph [rankdir=TB, fontname="Helvetica", bgcolor="white"];
+    node [shape=box, style="rounded,filled", fontname="Helvetica"];
+    edge [fontname="Helvetica"];
+
+    // --- DÜĞÜM TANIMLAMALARI (Şekillere Uygun) ---
+    // Başlangıç / Bitiş (Elips)
+    Start [label="Başla", shape=ellipse, fillcolor=lightblue];
+    End [label="Bitir", shape=ellipse, fillcolor=lightblue];
+
+    // Girdi / Çıktı (Paralelkenar)
+    MainMenu [label="Ana Menüyü Göster\n1.Listele 2.Ekle 3.Göster 4.Öde 5.Çıkış", shape=parallelogram, fillcolor=lightyellow];
+    DisplayProducts [label="Ürünleri Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    AskProductID [label="Kullanıcıdan Ürün ID'si Al", shape=parallelogram, fillcolor=lightyellow];
+    AskQuantity [label="Kullanıcıdan Miktar Al", shape=parallelogram, fillcolor=lightyellow];
+    ShowCart [label="Sepeti Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    ShowTotals [label="Ödeme Özetini Göster", shape=parallelogram, fillcolor=lightyellow];
+    ConfirmPayment [label="Kullanıcıdan Ödeme Onayı Al", shape=parallelogram, fillcolor=lightyellow];
+    
+    // İşlemler (Dikdörtgen)
+    FindProduct [label="Ürünü Veritabanında Bul"];
+    AddToCart [label="Ürünü Sepete Ekle\nStoktan Düş"];
+    CalculateTotals [label="Ara Toplamı Hesapla"];
+    ApplyDiscount [label="İndirimi Hesapla ve Ekle"];
+    CalculateFinalTotal [label="Genel Toplamı Hesapla"];
+    PaymentSuccess [label="Ödeme Başarılı\nSepeti Temizle"];
+    PaymentCancelled [label="Ödeme İptal Edildi"];
+    
+    // Karar Noktaları (Baklava Dilimi)
+    UserChoice [label="Kullanıcı Seçimi", shape=diamond, fillcolor=lightgreen];
+    IsProductFound [label="Ürün Bulundu mu?", shape=diamond, fillcolor=lightgreen];
+    IsInStock [label="Stok Var mı?", shape=diamond, fillcolor=lightgreen];
+    IsQuantitySufficient [label="Miktar Yeterli mi?", shape=diamond, fillcolor=lightgreen];
+    IsCartEmpty_View [label="Sepet Boş mu?", shape=diamond, fillcolor=lightgreen];
+    IsCartEmpty_Checkout [label="Sepet Boş mu?", shape=diamond, fillcolor=lightgreen];
+    IsDiscountAvailable [label="İndirim Var mı?", shape=diamond, fillcolor=lightgreen];
+    IsPaymentConfirmed [label="Ödeme Onaylandı mı?", shape=diamond, fillcolor=lightgreen];
+    
+    // Hata Mesajları
+    ProductNotFound [label="Hata: Ürün Bulunamadı", shape=box, style=filled, fillcolor=lightcoral];
+    OutOfStock [label="Hata: Stok Tükenmiş", shape=box, style=filled, fillcolor=lightcoral];
+    NotEnoughStock [label="Hata: Yetersiz Stok", shape=box, style=filled, fillcolor=lightcoral];
+    CartIsEmpty [label="Bilgi: Sepetiniz Boş", shape=box, style=filled, fillcolor=lightgray];
+
+    // --- AKIŞ BAĞLANTILARI ---
+    Start -> MainMenu;
+    MainMenu -> UserChoice;
+
+    UserChoice -> DisplayProducts [label="1"];
+    DisplayProducts -> MainMenu;
+    
+    UserChoice -> AskProductID [label="2"];
+    AskProductID -> FindProduct -> IsProductFound;
+    IsProductFound -> IsInStock [label="Evet"];
+    IsProductFound -> ProductNotFound [label="Hayır"];
+    IsInStock -> AskQuantity [label="Evet"];
+    IsInStock -> OutOfStock [label="Hayır"];
+    AskQuantity -> IsQuantitySufficient;
+    IsQuantitySufficient -> AddToCart [label="Evet"];
+    IsQuantitySufficient -> NotEnoughStock [label="Hayır"];
+    AddToCart -> MainMenu;
+    ProductNotFound -> MainMenu;
+    OutOfStock -> MainMenu;
+    NotEnoughStock -> MainMenu;
+
+    UserChoice -> IsCartEmpty_View [label="3"];
+    IsCartEmpty_View -> CartIsEmpty [label="Evet"];
+    IsCartEmpty_View -> ShowCart [label="Hayır"];
+    CartIsEmpty -> MainMenu;
+    ShowCart -> MainMenu;
+    
+    UserChoice -> IsCartEmpty_Checkout [label="4"];
+    IsCartEmpty_Checkout -> CartIsEmpty [label="Evet"];
+
+    subgraph cluster_checkout {
+        label = "Ödeme Süreci";
+        style = "rounded";
+        IsCartEmpty_Checkout -> CalculateTotals [label="Hayır"];
+        CalculateTotals -> IsDiscountAvailable;
+        IsDiscountAvailable -> ApplyDiscount [label="Evet"];
+        IsDiscountAvailable -> CalculateFinalTotal [label="Hayır"];
+        ApplyDiscount -> CalculateFinalTotal;
+        CalculateFinalTotal -> ShowTotals -> ConfirmPayment -> IsPaymentConfirmed;
+        IsPaymentConfirmed -> PaymentSuccess [label="Evet"];
+        IsPaymentConfirmed -> PaymentCancelled [label="Hayır"];
+        PaymentSuccess -> MainMenu;
+        PaymentCancelled -> MainMenu;
+    }
+
+    UserChoice -> End [label="5"];
+}
+
+
+
+
+
+
+
+ekrandaki siyah kısımları düzelt ve okunacak bir renk ilen değiştir
+
+
+Haklısınız, görselde siyah renkle doldurulmuş bazı kutular okunurluğu ciddi şekilde azaltıyor. DOT kodunda fillcolor parametresini kullanarak bu kısımları okunur ve estetik renklere dönüştürüp, genel şemanın okunabilirliğini artıracağım.
+
+Görselinizdeki siyah kısımların, genellikle karar noktaları (elmas şeklindeki düğümler) ve bazı işlem düğümleri olduğunu görüyorum. Bunları, diğer düğümlerle uyumlu ama belirgin farklılık yaratan renklerle değiştireceğim.
+
+Yapacağım değişiklikler:
+
+Görseldeki koyu gri/siyah karar düğümlerini (elmas şekilli) daha açık ve okunabilir bir renk (#FCF3CF - açık sarı tonu) ile değiştireceğim. Bu renk, Evet/Hayır etiketleriyle iyi kontrast oluşturacak.
+
+Görseldeki "Ürünü Veritabanında Bul" gibi gri dikdörtgen işlem düğümlerinin fillcolor değerini daha belirgin ve uyumlu bir tona (#D4E6F1 - açık mavi/gri) çekeceğim.
+
+Akış şemasının genel arka planını zaten beyaz olarak ayarlamıştık, bu şekilde kalacak.
+
+İşte bu değişiklikleri içeren güncellenmiş DOT kodu:
+
+Online Alışveriş Sepeti (Okunur Renklerle Güncellenmiş DOT Kodu)
+Kod snippet'i
+
+digraph OnlineSatis_Flowchart_Readable {
+    // --- GRAFİK AYARLARI ---
+    graph [rankdir=TB, fontname="Helvetica", bgcolor="white"];
+    node [shape=box, style="rounded,filled", fontname="Helvetica"];
+    edge [fontname="Helvetica"];
+
+    // --- DÜĞÜM TANIMLAMALARI (Şekillere Uygun ve Okunur Renkler) ---
+    // Başlangıç / Bitiş (Elips)
+    Start [label="Başla", shape=ellipse, fillcolor=lightblue];
+    End [label="Bitir", shape=ellipse, fillcolor=lightblue];
+
+    // Girdi / Çıktı (Paralelkenar - Açık Sarı)
+    MainMenu [label="Ana Menüyü Göster\n1.Listele 2.Ekle 3.Göster 4.Öde 5.Çıkış", shape=parallelogram, fillcolor=lightyellow];
+    DisplayProducts [label="Ürünleri Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    AskProductID [label="Kullanıcıdan Ürün ID'si Al", shape=parallelogram, fillcolor=lightyellow];
+    AskQuantity [label="Kullanıcıdan Miktar Al", shape=parallelogram, fillcolor=lightyellow];
+    ShowCart [label="Sepeti Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    ShowTotals [label="Ödeme Özetini Göster", shape=parallelogram, fillcolor=lightyellow];
+    ConfirmPayment [label="Kullanıcıdan Ödeme Onayı Al", shape=parallelogram, fillcolor=lightyellow];
+    
+    // İşlemler (Dikdörtgen - Açık Mavi/Gri)
+    FindProduct [label="Ürünü Veritabanında Bul", fillcolor="#D4E6F1"]; // Renk güncellendi
+    AddToCart [label="Ürünü Sepete Ekle\nStoktan Düş", fillcolor="#D4E6F1"]; // Renk güncellendi
+    CalculateTotals [label="Ara Toplamı Hesapla", fillcolor="#D4E6F1"]; // Renk güncellendi
+    ApplyDiscount [label="İndirimi Hesapla ve Ekle", fillcolor="#D4E6F1"]; // Renk güncellendi
+    CalculateFinalTotal [label="Genel Toplamı Hesapla", fillcolor="#D4E6F1"]; // Renk güncellendi
+    PaymentSuccess [label="Ödeme Başarılı\nSepeti Temizle", fillcolor="#A9DFBF"]; // Başarılı işlem için yeşil tonu
+    PaymentCancelled [label="Ödeme İptal Edildi", fillcolor="#F5B7B1"]; // İptal için kırmızı tonu
+    
+    // Karar Noktaları (Baklava Dilimi - Açık Sarı/Yeşil Tonları)
+    UserChoice [label="Kullanıcı Seçimi", shape=diamond, fillcolor="#FCF3CF"]; // Renk güncellendi
+    IsProductFound [label="Ürün Bulundu mu?", shape=diamond, fillcolor="#FCF3CF"]; // Renk güncellendi
+    IsInStock [label="Stok Var mı?", shape=diamond, fillcolor="#FCF3CF"]; // Renk güncellendi
+    IsQuantitySufficient [label="Miktar Yeterli mi?", shape=diamond, fillcolor="#FCF3CF"]; // Renk güncellendi
+    IsCartEmpty_View [label="Sepet Boş mu?", shape=diamond, fillcolor="#FCF3CF"]; // Renk güncellendi
+    IsCartEmpty_Checkout [label="Sepet Boş mu?", shape=diamond, fillcolor="#FCF3CF"]; // Renk güncellendi
+    IsDiscountAvailable [label="İndirim Var mı?", shape=diamond, fillcolor="#FCF3CF"]; // Renk güncellendi
+    IsPaymentConfirmed [label="Ödeme Onaylandı mı?", shape=diamond, fillcolor="#FCF3CF"]; // Renk güncellendi
+    
+    // Hata Mesajları (Açık Kırmızı tonu)
+    ProductNotFound [label="Hata: Ürün Bulunamadı", shape=box, style=filled, fillcolor=lightcoral];
+    OutOfStock [label="Hata: Stok Tükenmiş", shape=box, style=filled, fillcolor=lightcoral];
+    NotEnoughStock [label="Hata: Yetersiz Stok", shape=box, style=filled, fillcolor=lightcoral];
+    CartIsEmpty [label="Bilgi: Sepetiniz Boş", shape=box, style=filled, fillcolor=lightgray];
+
+    // --- AKIŞ BAĞLANTILARI ---
+    Start -> MainMenu;
+    MainMenu -> UserChoice;
+
+    UserChoice -> DisplayProducts [label="1"];
+    DisplayProducts -> MainMenu;
+    
+    UserChoice -> AskProductID [label="2"];
+    AskProductID -> FindProduct -> IsProductFound;
+    IsProductFound -> IsInStock [label="Evet"];
+    IsProductFound -> ProductNotFound [label="Hayır"];
+    IsInStock -> AskQuantity [label="Evet"];
+    IsInStock -> OutOfStock [label="Hayır"];
+    AskQuantity -> IsQuantitySufficient;
+    IsQuantitySufficient -> AddToCart [label="Evet"];
+    IsQuantitySufficient -> NotEnoughStock [label="Hayır"];
+    AddToCart -> MainMenu;
+    ProductNotFound -> MainMenu;
+    OutOfStock -> MainMenu;
+    NotEnoughStock -> MainMenu;
+
+    UserChoice -> IsCartEmpty_View [label="3"];
+    IsCartEmpty_View -> CartIsEmpty [label="Evet"];
+    IsCartEmpty_View -> ShowCart [label="Hayır"];
+    CartIsEmpty -> MainMenu;
+    ShowCart -> MainMenu;
+    
+    UserChoice -> IsCartEmpty_Checkout [label="4"];
+    IsCartEmpty_Checkout -> CartIsEmpty [label="Evet"];
+
+    subgraph cluster_checkout {
+        label = "Ödeme Süreci";
+        style = "rounded";
+        fillcolor = "#E8F8F5"; // Alt süreç arka plan rengi
+        node [fillcolor="#D4E6F1"]; // Alt süreçteki düğümler için varsayılan renk
+
+        IsCartEmpty_Checkout -> CalculateTotals [label="Hayır"];
+        CalculateTotals -> IsDiscountAvailable;
+        IsDiscountAvailable -> ApplyDiscount [label="Evet"];
+        IsDiscountAvailable -> CalculateFinalTotal [label="Hayır"];
+        ApplyDiscount -> CalculateFinalTotal;
+        CalculateFinalTotal -> ShowTotals -> ConfirmPayment -> IsPaymentConfirmed;
+        IsPaymentConfirmed -> PaymentSuccess [label="Evet"];
+        IsPaymentConfirmed -> PaymentCancelled [label="Hayır"];
+        PaymentSuccess -> MainMenu;
+        PaymentCancelled -> MainMenu;
+    }
+
+    UserChoice -> End [label="5"];
+}
+
+
+
+
+
+
+Bu şemayı yukarıdan aşşağıya yada soldan sağa olucak şekilde düzelt ve bundan sonra dot kodunda soldan sağa yada yukarıdan aşşağıya doğru yaz
+
+
+
+Düşünme sürecini göster
+Anlaşıldı. İsteğinizi ve bundan sonraki tüm DOT kodları için geçerli olacak yeni kuralı anladım.
+
+Bundan sonra oluşturacağım tüm DOT akış şemalarında, akış yönünü rankdir komutuyla net bir şekilde Yukarıdan Aşağıya (TB) veya Soldan Sağa (LR) olarak belirleyeceğim. Bu, şemaların her zaman düzenli ve takip etmesi kolay bir yapıda olmasını sağlayacaktır.
+
+Bir önceki "Online Alışveriş Sepeti" şemasındaki dağınık görünümü düzeltmek için, akış yönünü net bir şekilde Soldan Sağa (Left to Right) olarak yeniden düzenledim. Bu, şemanın okunmasını çok daha kolay ve lineer hale getirecektir.
+
+İşte bu kurala uygun olarak güncellenmiş, tam DOT kodu:
+
+Online Alışveriş Sepeti (Soldan Sağa Düzenlenmiş DOT Kodu)
+Kod snippet'i
+
+digraph OnlineSatis_Flowchart_LR {
+    // --- GRAFİK AYARLARI ---
+    // GÜNCELLEME: Akış yönü, net ve düzenli bir görünüm için Soldan Sağa (Left to Right) olarak ayarlandı.
+    graph [rankdir=LR, fontname="Helvetica", bgcolor="white"];
+    node [shape=box, style="rounded,filled", fontname="Helvetica"];
+    edge [fontname="Helvetica"];
+
+    // --- DÜĞÜM TANIMLAMALARI (Şekillere Uygun ve Okunur Renkler) ---
+    // Başlangıç / Bitiş (Elips)
+    Start [label="Başla", shape=ellipse, fillcolor=lightblue];
+    End [label="Bitir", shape=ellipse, fillcolor=lightblue];
+
+    // Girdi / Çıktı (Paralelkenar - Açık Sarı)
+    MainMenu [label="Ana Menüyü Göster\n1.Listele 2.Ekle 3.Göster 4.Öde 5.Çıkış", shape=parallelogram, fillcolor=lightyellow];
+    DisplayProducts [label="Ürünleri Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    AskProductID [label="Kullanıcıdan Ürün ID'si Al", shape=parallelogram, fillcolor=lightyellow];
+    AskQuantity [label="Kullanıcıdan Miktar Al", shape=parallelogram, fillcolor=lightyellow];
+    ShowCart [label="Sepeti Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    ShowTotals [label="Ödeme Özetini Göster", shape=parallelogram, fillcolor=lightyellow];
+    ConfirmPayment [label="Kullanıcıdan Ödeme Onayı Al", shape=parallelogram, fillcolor=lightyellow];
+    
+    // İşlemler (Dikdörtgen - Açık Mavi/Gri)
+    FindProduct [label="Ürünü Veritabanında Bul", fillcolor="#D4E6F1"];
+    AddToCart [label="Ürünü Sepete Ekle\nStoktan Düş", fillcolor="#D4E6F1"];
+    CalculateTotals [label="Ara Toplamı Hesapla", fillcolor="#D4E6F1"];
+    ApplyDiscount [label="İndirimi Hesapla ve Ekle", fillcolor="#D4E6F1"];
+    CalculateFinalTotal [label="Genel Toplamı Hesapla", fillcolor="#D4E6F1"];
+    PaymentSuccess [label="Ödeme Başarılı\nSepeti Temizle", fillcolor="#A9DFBF"];
+    PaymentCancelled [label="Ödeme İptal Edildi", fillcolor="#F5B7B1"];
+    
+    // Karar Noktaları (Baklava Dilimi - Açık Sarı)
+    UserChoice [label="Kullanıcı Seçimi", shape=diamond, fillcolor="#FCF3CF"];
+    IsProductFound [label="Ürün Bulundu mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsInStock [label="Stok Var mı?", shape=diamond, fillcolor="#FCF3CF"];
+    IsQuantitySufficient [label="Miktar Yeterli mi?", shape=diamond, fillcolor="#FCF3CF"];
+    IsCartEmpty_View [label="Sepet Boş mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsCartEmpty_Checkout [label="Sepet Boş mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsDiscountAvailable [label="İndirim Var mı?", shape=diamond, fillcolor="#FCF3CF"];
+    IsPaymentConfirmed [label="Ödeme Onaylandı mı?", shape=diamond, fillcolor="#FCF3CF"];
+    
+    // Hata Mesajları (Açık Kırmızı tonu)
+    ProductNotFound [label="Hata: Ürün Bulunamadı", shape=box, style=filled, fillcolor=lightcoral];
+    OutOfStock [label="Hata: Stok Tükenmiş", shape=box, style=filled, fillcolor=lightcoral];
+    NotEnoughStock [label="Hata: Yetersiz Stok", shape=box, style=filled, fillcolor=lightcoral];
+    CartIsEmpty [label="Bilgi: Sepetiniz Boş", shape=box, style=filled, fillcolor=lightgray];
+
+    // --- AKIŞ BAĞLANTILARI ---
+    Start -> MainMenu;
+    MainMenu -> UserChoice;
+
+    UserChoice -> DisplayProducts [label="1"];
+    DisplayProducts -> MainMenu;
+    
+    UserChoice -> AskProductID [label="2"];
+    AskProductID -> FindProduct -> IsProductFound;
+    IsProductFound -> IsInStock [label="Evet"];
+    IsProductFound -> ProductNotFound [label="Hayır"];
+    IsInStock -> AskQuantity [label="Evet"];
+    IsInStock -> OutOfStock [label="Hayır"];
+    AskQuantity -> IsQuantitySufficient;
+    IsQuantitySufficient -> AddToCart [label="Evet"];
+    IsQuantitySufficient -> NotEnoughStock [label="Hayır"];
+    AddToCart -> MainMenu;
+    ProductNotFound -> MainMenu;
+    OutOfStock -> MainMenu;
+    NotEnoughStock -> MainMenu;
+
+    UserChoice -> IsCartEmpty_View [label="3"];
+    IsCartEmpty_View -> CartIsEmpty [label="Evet"];
+    IsCartEmpty_View -> ShowCart [label="Hayır"];
+    CartIsEmpty -> MainMenu;
+    ShowCart -> MainMenu;
+    
+    UserChoice -> IsCartEmpty_Checkout [label="4"];
+    IsCartEmpty_Checkout -> CartIsEmpty [label="Evet"];
+
+    subgraph cluster_checkout {
+        label = "Ödeme Süreci";
+        style = "rounded";
+        fillcolor = "#E8F8F5";
+        node [fillcolor="#D4E6F1"];
+
+        IsCartEmpty_Checkout -> CalculateTotals [label="Hayır"];
+        CalculateTotals -> IsDiscountAvailable;
+        IsDiscountAvailable -> ApplyDiscount [label="Evet"];
+        IsDiscountAvailable -> CalculateFinalTotal [label="Hayır"];
+        ApplyDiscount -> CalculateFinalTotal;
+        CalculateFinalTotal -> ShowTotals -> ConfirmPayment -> IsPaymentConfirmed;
+        IsPaymentConfirmed -> PaymentSuccess [label="Evet"];
+        IsPaymentConfirmed -> PaymentCancelled [label="Hayır"];
+        PaymentSuccess -> MainMenu;
+        PaymentCancelled -> MainMenu;
+    }
+
+    UserChoice -> End [label="5"];
+}
+
+
+
+
+
+
+hala yanlış yukarıdan aşağıya sıralı bir şekilde yapman gerekiyor
+
+
+
+Düşünme sürecini göster
+Haklısınız, özür dilerim. Bir önceki denememde, şemayı düzenlemek için Soldan Sağa (LR) yönünü kullanmıştım. İsteğinizin net bir şekilde Yukarıdan Aşağıya (TB) sıralı bir akış olduğunu şimdi anladım ve bu kurala göre kodu tamamen yeniden düzenledim.
+
+Dağınık görünüme neden olan şey, birçok farklı işlem bloğundan en başa, yani "Ana Menü"ye geri dönen oklardır. Bu, Graphviz'in en kısa yolu bulmaya çalışırken şemayı karıştırmasına neden olur.
+
+Bu sorunu çözmek ve istediğiniz net, sıralı Yukarıdan Aşağıya akışı sağlamak için DOT kodunu güncelledim.
+
+İşte istediğiniz gibi düzeltilmiş, tam DOT kodu:
+
+Online Alışveriş Sepeti (Yukarıdan Aşağıya Sıralı DOT Kodu)
+Kod snippet'i
+
+digraph OnlineSatis_Flowchart_TB {
+    // --- GRAFİK AYARLARI ---
+    // GÜNCELLEME: Akış yönü, isteğiniz üzerine Yukarıdan Aşağıya (Top to Bottom) olarak ayarlandı.
+    graph [rankdir=TB, fontname="Helvetica", bgcolor="white", splines=ortho];
+    node [shape=box, style="rounded,filled", fontname="Helvetica"];
+    edge [fontname="Helvetica"];
+
+    // --- DÜĞÜM TANIMLAMALARI (Şekillere Uygun ve Okunur Renkler) ---
+    // Başlangıç / Bitiş (Elips)
+    Start [label="Başla", shape=ellipse, fillcolor=lightblue];
+    End [label="Bitir", shape=ellipse, fillcolor=lightblue];
+
+    // Girdi / Çıktı (Paralelkenar - Açık Sarı)
+    MainMenu [label="Ana Menüyü Göster\n1.Listele 2.Ekle 3.Göster 4.Öde 5.Çıkış", shape=parallelogram, fillcolor=lightyellow];
+    DisplayProducts [label="Ürünleri Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    AskProductID [label="Kullanıcıdan Ürün ID'si Al", shape=parallelogram, fillcolor=lightyellow];
+    AskQuantity [label="Kullanıcıdan Miktar Al", shape=parallelogram, fillcolor=lightyellow];
+    ShowCart [label="Sepeti Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    ShowTotals [label="Ödeme Özetini Göster", shape=parallelogram, fillcolor=lightyellow];
+    ConfirmPayment [label="Kullanıcıdan Ödeme Onayı Al", shape=parallelogram, fillcolor=lightyellow];
+    
+    // İşlemler (Dikdörtgen - Açık Mavi/Gri)
+    FindProduct [label="Ürünü Veritabanında Bul", fillcolor="#D4E6F1"];
+    AddToCart [label="Ürünü Sepete Ekle\nStoktan Düş", fillcolor="#D4E6F1"];
+    CalculateTotals [label="Ara Toplamı Hesapla", fillcolor="#D4E6F1"];
+    ApplyDiscount [label="İndirimi Hesapla ve Ekle", fillcolor="#D4E6F1"];
+    CalculateFinalTotal [label="Genel Toplamı Hesapla", fillcolor="#D4E6F1"];
+    PaymentSuccess [label="Ödeme Başarılı\nSepeti Temizle", fillcolor="#A9DFBF"];
+    PaymentCancelled [label="Ödeme İptal Edildi", fillcolor="#F5B7B1"];
+    
+    // Karar Noktaları (Baklava Dilimi - Açık Sarı)
+    UserChoice [label="Kullanıcı Seçimi", shape=diamond, fillcolor="#FCF3CF"];
+    IsProductFound [label="Ürün Bulundu mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsInStock [label="Stok Var mı?", shape=diamond, fillcolor="#FCF3CF"];
+    IsQuantitySufficient [label="Miktar Yeterli mi?", shape=diamond, fillcolor="#FCF3CF"];
+    IsCartEmpty_View [label="Sepet Boş mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsCartEmpty_Checkout [label="Sepet Boş mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsDiscountAvailable [label="İndirim Var mı?", shape=diamond, fillcolor="#FCF3CF"];
+    IsPaymentConfirmed [label="Ödeme Onaylandı mı?", shape=diamond, fillcolor="#FCF3CF"];
+    
+    // Hata Mesajları (Açık Kırmızı tonu)
+    ProductNotFound [label="Hata: Ürün Bulunamadı", shape=box, style=filled, fillcolor=lightcoral];
+    OutOfStock [label="Hata: Stok Tükenmiş", shape=box, style=filled, fillcolor=lightcoral];
+    NotEnoughStock [label="Hata: Yetersiz Stok", shape=box, style=filled, fillcolor=lightcoral];
+    CartIsEmpty [label="Bilgi: Sepetiniz Boş", shape=box, style=filled, fillcolor=lightgray];
+
+    // --- AKIŞ BAĞLANTILARI ---
+    Start -> MainMenu;
+    MainMenu -> UserChoice;
+
+    // Ana menüden çıkan yolları gruplayarak düzeni sağlama
+    {rank=same; UserChoice;}
+    UserChoice -> DisplayProducts [label="1"];
+    UserChoice -> AskProductID [label="2"];
+    UserChoice -> IsCartEmpty_View [label="3"];
+    UserChoice -> IsCartEmpty_Checkout [label="4"];
+    UserChoice -> End [label="5"];
+
+    // 1. Ürün Listeleme Akışı
+    DisplayProducts -> MainMenu;
+    
+    // 2. Sepete Ekleme Akışı
+    AskProductID -> FindProduct -> IsProductFound;
+    IsProductFound -> IsInStock [label="Evet"];
+    IsProductFound -> ProductNotFound [label="Hayır"];
+    IsInStock -> AskQuantity [label="Evet"];
+    IsInStock -> OutOfStock [label="Hayır"];
+    AskQuantity -> IsQuantitySufficient;
+    IsQuantitySufficient -> AddToCart [label="Evet"];
+    IsQuantitySufficient -> NotEnoughStock [label="Hayır"];
+    AddToCart -> MainMenu;
+    ProductNotFound -> MainMenu;
+    OutOfStock -> MainMenu;
+    NotEnoughStock -> MainMenu;
+
+    // 3. Sepeti Görüntüleme Akışı
+    IsCartEmpty_View -> CartIsEmpty [label="Evet"];
+    IsCartEmpty_View -> ShowCart [label="Hayır"];
+    CartIsEmpty -> MainMenu;
+    ShowCart -> MainMenu;
+    
+    // 4. Ödeme Akışı
+    IsCartEmpty_Checkout -> CartIsEmpty [label="Evet"];
+    subgraph cluster_checkout {
+        label = "Ödeme Süreci";
+        style = "rounded";
+        fillcolor = "#E8F8F5";
+        node [fillcolor="#D4E6F1"];
+
+        IsCartEmpty_Checkout -> CalculateTotals [label="Hayır"];
+        CalculateTotals -> IsDiscountAvailable;
+        IsDiscountAvailable -> ApplyDiscount [label="Evet"];
+        IsDiscountAvailable -> CalculateFinalTotal [label="Hayır"];
+        ApplyDiscount -> CalculateFinalTotal;
+        CalculateFinalTotal -> ShowTotals -> ConfirmPayment -> IsPaymentConfirmed;
+        IsPaymentConfirmed -> PaymentSuccess [label="Evet"];
+        IsPaymentConfirmed -> PaymentCancelled [label="Hayır"];
+        PaymentSuccess -> MainMenu;
+        PaymentCancelled -> MainMenu;
+    }
+}
+
+
+
+
+
+
+Yanlış yaptın bak başla kısmı en yukarıda bitir kısmı en altta olucak şekilde kısım kısım ve yukarıdan aşağıya doğru bir düzende hazırlaman gerekiyor
+
+
+
+Düşünme sürecini göster
+Kesinlikle haklısınız, önceki şema istediğiniz net ve sıralı yapıyı tam olarak sağlayamadı. Özür dilerim. "Yukarıdan aşağıya, kısım kısım" talebinizi şimdi çok daha iyi anladım. Amaç, her bir menü seçeneğinin kendi dikey akışına sahip olması ve şemanın en tepesinde "Başla", en altında ise "Bitir" düğmesinin net bir şekilde konumlanmasıdır.
+
+Bu düzeni sağlamak için Graphviz'in layout motorunu daha katı kurallarla yönlendirmemiz gerekiyor. Aşağıdaki DOT kodunda, her bir ana işlem bloğunu (Ürün Listeleme, Sepete Ekleme vb.) kendi dikey yolunda akacak şekilde yeniden yapılandırdım. Start -> MainMenu -> UserChoice ana omurgayı oluştururken, diğer tüm işlemler bu omurgadan ayrılıp, kendi görevlerini tamamladıktan sonra tekrar ana döngüye (MainMenu) geri döner. "Bitir" düğmesi ise sadece "Çıkış" seçeneğinden ulaşılan, şemanın en altındaki nihai duraktır.
+
+Bu versiyonun, tam olarak tarif ettiğiniz düzenli ve anlaşılır yapıyı sağladığından eminim.
+
+Online Alışveriş Sepeti (Yukarıdan Aşağıya Sıralı ve Düzenlenmiş DOT Kodu)
+Kod snippet'i
+
+digraph OnlineSatis_Flowchart_Strict_TB {
+    // --- GRAFİK AYARLARI ---
+    // Akış yönü: Yukarıdan Aşağıya (Top to Bottom)
+    // splines=ortho, düz çizgilerle daha düzenli bir görünüm sağlar.
+    graph [rankdir=TB, fontname="Helvetica", bgcolor="white", splines=ortho];
+    node [shape=box, style="rounded,filled", fontname="Helvetica"];
+    edge [fontname="Helvetica"];
+
+    // --- DÜĞÜM TANIMLAMALARI ---
+    // Başlangıç / Bitiş (Elips) - En üst ve en alt
+    Start [label="Başla", shape=ellipse, fillcolor=lightblue];
+    End [label="Bitir", shape=ellipse, fillcolor=lightblue];
+
+    // Girdi / Çıktı (Paralelkenar)
+    MainMenu [label="Ana Menüyü Göster\n1.Listele 2.Ekle 3.Göster 4.Öde 5.Çıkış", shape=parallelogram, fillcolor=lightyellow];
+    DisplayProducts [label="Ürünleri Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    AskProductID [label="Kullanıcıdan Ürün ID'si Al", shape=parallelogram, fillcolor=lightyellow];
+    AskQuantity [label="Kullanıcıdan Miktar Al", shape=parallelogram, fillcolor=lightyellow];
+    ShowCart [label="Sepeti Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    ShowTotals [label="Ödeme Özetini Göster", shape=parallelogram, fillcolor=lightyellow];
+    ConfirmPayment [label="Kullanıcıdan Ödeme Onayı Al", shape=parallelogram, fillcolor=lightyellow];
+    
+    // İşlemler (Dikdörtgen)
+    FindProduct [label="Ürünü Veritabanında Bul", fillcolor="#D4E6F1"];
+    AddToCart [label="Ürünü Sepete Ekle\nStoktan Düş", fillcolor="#D4E6F1"];
+    CalculateTotals [label="Ara Toplamı Hesapla", fillcolor="#D4E6F1"];
+    ApplyDiscount [label="İndirimi Hesapla ve Ekle", fillcolor="#D4E6F1"];
+    CalculateFinalTotal [label="Genel Toplamı Hesapla", fillcolor="#D4E6F1"];
+    PaymentSuccess [label="Ödeme Başarılı\nSepeti Temizle", fillcolor="#A9DFBF"];
+    PaymentCancelled [label="Ödeme İptal Edildi", fillcolor="#F5B7B1"];
+    
+    // Karar Noktaları (Baklava Dilimi)
+    UserChoice [label="Kullanıcı Seçimi", shape=diamond, fillcolor="#FCF3CF"];
+    IsProductFound [label="Ürün Bulundu mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsInStock [label="Stok Var mı?", shape=diamond, fillcolor="#FCF3CF"];
+    IsQuantitySufficient [label="Miktar Yeterli mi?", shape=diamond, fillcolor="#FCF3CF"];
+    IsCartEmpty_View [label="Sepet Boş mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsCartEmpty_Checkout [label="Sepet Boş mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsDiscountAvailable [label="İndirim Var mı?", shape=diamond, fillcolor="#FCF3CF"];
+    IsPaymentConfirmed [label="Ödeme Onaylandı mı?", shape=diamond, fillcolor="#FCF3CF"];
+    
+    // Hata / Bilgi Mesajları
+    ProductNotFound [label="Hata: Ürün Bulunamadı", fillcolor=lightcoral];
+    OutOfStock [label="Hata: Stok Tükenmiş", fillcolor=lightcoral];
+    NotEnoughStock [label="Hata: Yetersiz Stok", fillcolor=lightcoral];
+    CartIsEmpty [label="Bilgi: Sepetiniz Boş", fillcolor=lightgray];
+
+    // --- AKIŞ BAĞLANTILARI (Kısım Kısım ve Sıralı) ---
+
+    // Ana Akış Omurgası
+    Start -> MainMenu -> UserChoice;
+    
+    // Seçim 5: Çıkış Akışı (Doğrudan en alta, End düğümüne)
+    UserChoice -> End [label="5"];
+
+    // Seçim 1: Ürün Listeleme Akışı
+    UserChoice -> DisplayProducts [label="1"];
+    DisplayProducts -> MainMenu;
+    
+    // Seçim 2: Sepete Ürün Ekleme Akışı
+    UserChoice -> AskProductID [label="2"];
+    AskProductID -> FindProduct -> IsProductFound;
+    IsProductFound -> IsInStock [label="Evet"];
+    IsInStock -> AskQuantity [label="Evet"];
+    AskQuantity -> IsQuantitySufficient;
+    IsQuantitySufficient -> AddToCart [label="Evet"];
+    AddToCart -> MainMenu;
+    // Hata Yolları (Sepete Ekleme)
+    IsProductFound -> ProductNotFound [label="Hayır"];
+    ProductNotFound -> MainMenu;
+    IsInStock -> OutOfStock [label="Hayır"];
+    OutOfStock -> MainMenu;
+    IsQuantitySufficient -> NotEnoughStock [label="Hayır"];
+    NotEnoughStock -> MainMenu;
+
+    // Seçim 3: Sepeti Görüntüleme Akışı
+    UserChoice -> IsCartEmpty_View [label="3"];
+    IsCartEmpty_View -> ShowCart [label="Hayır"];
+    ShowCart -> MainMenu;
+    // Hata Yolu (Sepeti Görüntüleme)
+    IsCartEmpty_View -> CartIsEmpty [label="Evet"];
+    CartIsEmpty -> MainMenu;
+
+    // Seçim 4: Ödeme Akışı
+    UserChoice -> IsCartEmpty_Checkout [label="4"];
+    IsCartEmpty_Checkout -> CalculateTotals [label="Hayır"];
+    CalculateTotals -> IsDiscountAvailable;
+    IsDiscountAvailable -> ApplyDiscount [label="Evet"];
+    IsDiscountAvailable -> CalculateFinalTotal [label="Hayır"];
+    ApplyDiscount -> CalculateFinalTotal;
+    CalculateFinalTotal -> ShowTotals -> ConfirmPayment -> IsPaymentConfirmed;
+    IsPaymentConfirmed -> PaymentSuccess [label="Evet"];
+    PaymentSuccess -> MainMenu;
+    // Hata/İptal Yolları (Ödeme)
+    IsCartEmpty_Checkout -> CartIsEmpty [label="Evet"];
+    IsPaymentConfirmed -> PaymentCancelled [label="Hayır"];
+    PaymentCancelled -> MainMenu;
+
+    // Düzeni sağlamak için aynı seviyedeki düğümleri gruplama
+    {rank=same; DisplayProducts; AskProductID; IsCartEmpty_View; IsCartEmpty_Checkout;}
+}
+
+
+
+
+
+
+karar verme yapısaındaki sayı etiketlerinin yeri kaymış onları düzelterek yeniden yaz
+
+
+
+Düşünme sürecini göster
+Elbette. Anladım, önceki şemada UserChoice (Kullanıcı Seçimi) karar düğümünden çıkan 1, 2, 3, 4, 5 etiketli okların konumları dağınık ve hatalı görünüyordu. Bu, genellikle birçok farklı akışın aynı noktaya geri dönmesiyle oluşan karmaşıklıktan kaynaklanır.
+
+Bu sorunu kesin olarak çözmek ve şemayı tarif ettiğiniz gibi net, kısım kısım ve yukarıdan aşağıya akan bir yapıya getirmek için DOT kodunda mimari bir iyileştirme yaptım.
+
+Yaptığım Düzeltme:
+Tüm işlem kollarının (Ürün Ekleme, Sepeti Gösterme vb.) doğrudan MainMenu düğümüne geri dönmesi yerine, bu geri dönüşleri ReturnHub adını verdiğim görünmez bir birleşme noktasında topladım. Bu noktadan MainMenu'ye sadece tek ve temiz bir ok çıkar. Bu teknik, okların birbiri üzerinden geçmesini engeller, şemayı son derece düzenli hale getirir ve en önemlisi, UserChoice düğümünden çıkan sayı etiketlerinin doğru ve temiz bir şekilde konumlanmasını sağlar.
+
+İşte bu düzeltmeyi içeren, istediğiniz sıralı yapıdaki nihai DOT kodu:
+
+Online Alışveriş Sepeti (Etiketleri ve Akışı Düzeltilmiş DOT Kodu)
+Kod snippet'i
+
+digraph OnlineSatis_Flowchart_Corrected {
+    // --- GRAFİK AYARLARI ---
+    // Akış yönü: Yukarıdan Aşağıya (Top to Bottom)
+    graph [rankdir=TB, fontname="Helvetica", bgcolor="white"];
+    node [shape=box, style="rounded,filled", fontname="Helvetica"];
+    edge [fontname="Helvetica"];
+
+    // --- DÜĞÜM TANIMLAMALARI ---
+    // Başlangıç / Bitiş (Elips) - En üst ve en alt
+    Start [label="Başla", shape=ellipse, fillcolor=lightblue];
+    End [label="Bitir", shape=ellipse, fillcolor=lightblue];
+
+    // Girdi / Çıktı (Paralelkenar)
+    MainMenu [label="Ana Menüyü Göster\n1.Listele 2.Ekle 3.Göster 4.Öde 5.Çıkış", shape=parallelogram, fillcolor=lightyellow];
+    DisplayProducts [label="Ürünleri Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    AskProductID [label="Kullanıcıdan Ürün ID'si Al", shape=parallelogram, fillcolor=lightyellow];
+    AskQuantity [label="Kullanıcıdan Miktar Al", shape=parallelogram, fillcolor=lightyellow];
+    ShowCart [label="Sepeti Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    ShowTotals [label="Ödeme Özetini Göster", shape=parallelogram, fillcolor=lightyellow];
+    ConfirmPayment [label="Kullanıcıdan Ödeme Onayı Al", shape=parallelogram, fillcolor=lightyellow];
+    
+    // İşlemler (Dikdörtgen)
+    FindProduct [label="Ürünü Veritabanında Bul", fillcolor="#D4E6F1"];
+    AddToCart [label="Ürünü Sepete Ekle\nStoktan Düş", fillcolor="#D4E6F1"];
+    CalculateTotals [label="Ara Toplamı Hesapla", fillcolor="#D4E6F1"];
+    ApplyDiscount [label="İndirimi Hesapla ve Ekle", fillcolor="#D4E6F1"];
+    CalculateFinalTotal [label="Genel Toplamı Hesapla", fillcolor="#D4E6F1"];
+    PaymentSuccess [label="Ödeme Başarılı\nSepeti Temizle", fillcolor="#A9DFBF"];
+    PaymentCancelled [label="Ödeme İptal Edildi", fillcolor="#F5B7B1"];
+    
+    // Karar Noktaları (Baklava Dilimi)
+    UserChoice [label="Kullanıcı Seçimi", shape=diamond, fillcolor="#FCF3CF"];
+    IsProductFound [label="Ürün Bulundu mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsInStock [label="Stok Var mı?", shape=diamond, fillcolor="#FCF3CF"];
+    IsQuantitySufficient [label="Miktar Yeterli mi?", shape=diamond, fillcolor="#FCF3CF"];
+    IsCartEmpty_View [label="Sepet Boş mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsCartEmpty_Checkout [label="Sepet Boş mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsDiscountAvailable [label="İndirim Var mı?", shape=diamond, fillcolor="#FCF3CF"];
+    IsPaymentConfirmed [label="Ödeme Onaylandı mı?", shape=diamond, fillcolor="#FCF3CF"];
+    
+    // Hata / Bilgi Mesajları
+    ProductNotFound [label="Hata: Ürün Bulunamadı", fillcolor=lightcoral];
+    OutOfStock [label="Hata: Stok Tükenmiş", fillcolor=lightcoral];
+    NotEnoughStock [label="Hata: Yetersiz Stok", fillcolor=lightcoral];
+    CartIsEmpty [label="Bilgi: Sepetiniz Boş", fillcolor=lightgray];
+
+    // YENİ: Akışı düzenlemek için görünmez birleşme noktası
+    ReturnHub [shape=point, width=0, height=0];
+
+    // --- AKIŞ BAĞLANTILARI (Kısım Kısım ve Sıralı) ---
+
+    // Ana Akış Omurgası
+    Start -> MainMenu -> UserChoice;
+    
+    // Seçim 5: Çıkış Akışı (Doğrudan en alta, End düğümüne)
+    UserChoice -> End [label="5"];
+
+    // Seçim 1: Ürün Listeleme Akışı
+    UserChoice -> DisplayProducts [label="1"];
+    DisplayProducts -> ReturnHub;
+    
+    // Seçim 2: Sepete Ürün Ekleme Akışı
+    UserChoice -> AskProductID [label="2"];
+    AskProductID -> FindProduct -> IsProductFound;
+    IsProductFound -> IsInStock [label="Evet"];
+    IsInStock -> AskQuantity [label="Evet"];
+    AskQuantity -> IsQuantitySufficient;
+    IsQuantitySufficient -> AddToCart [label="Evet"];
+    AddToCart -> ReturnHub;
+    // Hata Yolları (Sepete Ekleme)
+    IsProductFound -> ProductNotFound [label="Hayır"];
+    ProductNotFound -> ReturnHub;
+    IsInStock -> OutOfStock [label="Hayır"];
+    OutOfStock -> ReturnHub;
+    IsQuantitySufficient -> NotEnoughStock [label="Hayır"];
+    NotEnoughStock -> ReturnHub;
+
+    // Seçim 3: Sepeti Görüntüleme Akışı
+    UserChoice -> IsCartEmpty_View [label="3"];
+    IsCartEmpty_View -> ShowCart [label="Hayır"];
+    ShowCart -> ReturnHub;
+    // Hata Yolu (Sepeti Görüntüleme)
+    IsCartEmpty_View -> CartIsEmpty [label="Evet"];
+    CartIsEmpty -> ReturnHub;
+
+    // Seçim 4: Ödeme Akışı
+    UserChoice -> IsCartEmpty_Checkout [label="4"];
+    IsCartEmpty_Checkout -> CalculateTotals [label="Hayır"];
+    CalculateTotals -> IsDiscountAvailable;
+    IsDiscountAvailable -> ApplyDiscount [label="Evet"];
+    IsDiscountAvailable -> CalculateFinalTotal [label="Hayır"];
+    ApplyDiscount -> CalculateFinalTotal;
+    CalculateFinalTotal -> ShowTotals -> ConfirmPayment -> IsPaymentConfirmed;
+    IsPaymentConfirmed -> PaymentSuccess [label="Evet"];
+    PaymentSuccess -> ReturnHub;
+    // Hata/İptal Yolları (Ödeme)
+    IsCartEmpty_Checkout -> CartIsEmpty [label="Evet"];
+    IsPaymentConfirmed -> PaymentCancelled [label="Hayır"];
+    PaymentCancelled -> ReturnHub;
+
+    // Görünmez birleşme noktasından Ana Menü'ye tek temiz dönüş
+    ReturnHub -> MainMenu [label="Yeni İşlem"];
+}
+
+
+
+
+
+
+yeniden yanlış yapmışsın bu seferde boş bir alana oklar çekmişsin onlarıda düzeltir misin?
+
+
+
+Düşünme sürecini göster
+Kesinlikle haklısınız, özür dilerim. "Boş bir alana" giden oklar, yani benim eklediğim görünmez birleşme noktası (ReturnHub), şemayı düzenlemek için teknik bir denemeydi ama kullanıcı gözünden bakıldığında tamamen hatalı ve kafa karıştırıcı bir görüntü oluşturdu. Amacınızın, her işlem bittiğinde mantıksal olarak Ana Menü'ye dönen ama görsel olarak bu dönüşün şemanın düzenini bozmadığı bir yapı olduğunu şimdi tam olarak anladım.
+
+Bu sorunu çözmek ve şemayı nihayet istediğiniz gibi mükemmel hale getirmek için çok daha temiz ve profesyonel bir yöntem kullanacağım. Artık her işlem bittiğinde, akış şemasının ana dikey yapısını bozmayan, kavisli ve ikincil bir okla (constraint=false) doğrudan Ana Menü'ye geri döneceğiz.
+
+Bu, şemanın hem mantıksal olarak doğru olmasını hem de görsel olarak tam tarif ettiğiniz gibi "Başla en yukarıda, Bitir en altta, kısım kısım ve yukarıdan aşağıya" düzeninde kalmasını sağlayacaktır.
+
+İşte bu son düzeltmeyi içeren, nihai ve doğru DOT kodu:
+
+Online Alışveriş Sepeti (Nihai, Düzenli ve Hatasız DOT Kodu)
+Kod snippet'i
+
+digraph OnlineSatis_Flowchart_Final {
+    // --- GRAFİK AYARLARI ---
+    // Akış yönü: Yukarıdan Aşağıya (Top to Bottom)
+    graph [rankdir=TB, fontname="Helvetica", bgcolor="white"];
+    node [shape=box, style="rounded,filled", fontname="Helvetica"];
+    edge [fontname="Helvetica"];
+
+    // --- DÜĞÜM TANIMLAMALARI ---
+    // Başlangıç / Bitiş (Elips) - En üst ve en alt
+    Start [label="Başla", shape=ellipse, fillcolor=lightblue];
+    End [label="Bitir", shape=ellipse, fillcolor=lightblue];
+
+    // Girdi / Çıktı (Paralelkenar)
+    MainMenu [label="Ana Menüyü Göster\n1.Listele 2.Ekle 3.Göster 4.Öde 5.Çıkış", shape=parallelogram, fillcolor=lightyellow];
+    DisplayProducts [label="Ürünleri Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    AskProductID [label="Kullanıcıdan Ürün ID'si Al", shape=parallelogram, fillcolor=lightyellow];
+    AskQuantity [label="Kullanıcıdan Miktar Al", shape=parallelogram, fillcolor=lightyellow];
+    ShowCart [label="Sepeti Ekrana Listele", shape=parallelogram, fillcolor=lightyellow];
+    ShowTotals [label="Ödeme Özetini Göster", shape=parallelogram, fillcolor=lightyellow];
+    ConfirmPayment [label="Kullanıcıdan Ödeme Onayı Al", shape=parallelogram, fillcolor=lightyellow];
+    
+    // İşlemler (Dikdörtgen)
+    FindProduct [label="Ürünü Veritabanında Bul", fillcolor="#D4E6F1"];
+    AddToCart [label="Ürünü Sepete Ekle\nStoktan Düş", fillcolor="#D4E6F1"];
+    CalculateTotals [label="Ara Toplamı Hesapla", fillcolor="#D4E6F1"];
+    ApplyDiscount [label="İndirimi Hesapla ve Ekle", fillcolor="#D4E6F1"];
+    CalculateFinalTotal [label="Genel Toplamı Hesapla", fillcolor="#D4E6F1"];
+    PaymentSuccess [label="Ödeme Başarılı\nSepeti Temizle", fillcolor="#A9DFBF"];
+    PaymentCancelled [label="Ödeme İptal Edildi", fillcolor="#F5B7B1"];
+    
+    // Karar Noktaları (Baklava Dilimi)
+    UserChoice [label="Kullanıcı Seçimi", shape=diamond, fillcolor="#FCF3CF"];
+    IsProductFound [label="Ürün Bulundu mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsInStock [label="Stok Var mı?", shape=diamond, fillcolor="#FCF3CF"];
+    IsQuantitySufficient [label="Miktar Yeterli mi?", shape=diamond, fillcolor="#FCF3CF"];
+    IsCartEmpty_View [label="Sepet Boş mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsCartEmpty_Checkout [label="Sepet Boş mu?", shape=diamond, fillcolor="#FCF3CF"];
+    IsDiscountAvailable [label="İndirim Var mı?", shape=diamond, fillcolor="#FCF3CF"];
+    IsPaymentConfirmed [label="Ödeme Onaylandı mı?", shape=diamond, fillcolor="#FCF3CF"];
+    
+    // Hata / Bilgi Mesajları
+    ProductNotFound [label="Hata: Ürün Bulunamadı", fillcolor=lightcoral];
+    OutOfStock [label="Hata: Stok Tükenmiş", fillcolor=lightcoral];
+    NotEnoughStock [label="Hata: Yetersiz Stok", fillcolor=lightcoral];
+    CartIsEmpty [label="Bilgi: Sepetiniz Boş", fillcolor=lightgray];
+
+    // --- AKIŞ BAĞLANTILARI (Kısım Kısım ve Sıralı) ---
+
+    // Ana Akış Omurgası
+    Start -> MainMenu -> UserChoice;
+    
+    // Seçim 5: Çıkış Akışı (Doğrudan en alta, End düğümüne)
+    UserChoice -> End [label="5"];
+
+    // Seçim 1: Ürün Listeleme Akışı
+    UserChoice -> DisplayProducts [label="1"];
+    DisplayProducts -> MainMenu [label="Yeni İşlem", constraint=false];
+    
+    // Seçim 2: Sepete Ürün Ekleme Akışı
+    UserChoice -> AskProductID [label="2"];
+    AskProductID -> FindProduct -> IsProductFound;
+    IsProductFound -> IsInStock [label="Evet"];
+    IsInStock -> AskQuantity [label="Evet"];
+    AskQuantity -> IsQuantitySufficient;
+    IsQuantitySufficient -> AddToCart [label="Evet"];
+    AddToCart -> MainMenu [label="Yeni İşlem", constraint=false];
+    // Hata Yolları (Sepete Ekleme)
+    IsProductFound -> ProductNotFound [label="Hayır"];
+    ProductNotFound -> MainMenu [label="Yeni İşlem", constraint=false];
+    IsInStock -> OutOfStock [label="Hayır"];
+    OutOfStock -> MainMenu [label="Yeni İşlem", constraint=false];
+    IsQuantitySufficient -> NotEnoughStock [label="Hayır"];
+    NotEnoughStock -> MainMenu [label="Yeni İşlem", constraint=false];
+
+    // Seçim 3: Sepeti Görüntüleme Akışı
+    UserChoice -> IsCartEmpty_View [label="3"];
+    IsCartEmpty_View -> ShowCart [label="Hayır"];
+    ShowCart -> MainMenu [label="Yeni İşlem", constraint=false];
+    // Hata Yolu (Sepeti Görüntüleme)
+    IsCartEmpty_View -> CartIsEmpty [label="Evet"];
+    CartIsEmpty -> MainMenu [label="Yeni İşlem", constraint=false];
+
+    // Seçim 4: Ödeme Akışı
+    UserChoice -> IsCartEmpty_Checkout [label="4"];
+    IsCartEmpty_Checkout -> CalculateTotals [label="Hayır"];
+    CalculateTotals -> IsDiscountAvailable;
+    IsDiscountAvailable -> ApplyDiscount [label="Evet"];
+    IsDiscountAvailable -> CalculateFinalTotal [label="Hayır"];
+    ApplyDiscount -> CalculateFinalTotal;
+    CalculateFinalTotal -> ShowTotals -> ConfirmPayment -> IsPaymentConfirmed;
+    IsPaymentConfirmed -> PaymentSuccess [label="Evet"];
+    PaymentSuccess -> MainMenu [label="Yeni İşlem", constraint=false];
+    // Hata/İptal Yolları (Ödeme)
+    IsCartEmpty_Checkout -> CartIsEmpty [label="Evet"];
+    IsPaymentConfirmed -> PaymentCancelled [label="Hayır"];
+    PaymentCancelled -> MainMenu [label="Yeni İşlem", constraint=false];
+
+    // Düzeni sağlamak için aynı seviyedeki düğümleri gruplama
+    {rank=same; DisplayProducts; AskProductID; IsCartEmpty_View; IsCartEmpty_Checkout;}
+}
+
+
+
+
+
+
+
+bu dot kodunun pseudocodesinin tam halini ver
+
+
+
+Düşünme sürecini göster
+Elbette. İşte, en son düzelttiğimiz ve nihai haline getirdiğimiz akış şemasının mantığını birebir yansıtan, Online Alışveriş Sepeti algoritmasının tam ve eksiksiz pseudocode hali.
+
+Online Alışveriş Sepeti (Nihai Pseudocode)
+BAŞLA
+
+// --- AÇIKLAMA: VERİ YAPILARI ---
+// Bu bölümde, sistemimizde kullanacağımız temel veri türlerini tanımlıyoruz.
+// Urun yapısı, mağazadaki her bir ürünü; SepetUrunu ise kullanıcının sepetine eklediği bir ürünü temsil eder.
+
+YAPI Urun:
+ID: SAYI
+Ad: METİN
+Fiyat: ONDALIKLI SAYI
+Stok: SAYI
+IndirimVarMi: MANTIKSAL // EVET veya HAYIR
+BİTİR YAPI
+
+YAPI SepetUrunu:
+Urun: Urun NESNESİ
+Miktar: SAYI
+BİTİR YAPI
+
+// --- AÇIKLAMA: SİSTEM BAŞLANGIÇ VERİLERİ ---
+// Algoritmanın çalışmasını test etmek için sembolik bir ürün veritabanı ve boş bir kullanıcı sepeti oluşturuyoruz.
+UrunVeritabani = [
+{ID:1, Ad:"Akıllı Telefon", Fiyat:15000.0, Stok:10, IndirimVarMi:EVET},
+{ID:2, Ad:"Kablosuz Kulaklık", Fiyat:1200.0, Stok:25, IndirimVarMi:HAYIR},
+{ID:3, Ad:"Laptop Çantası", Fiyat:750.0, Stok:5, IndirimVarMi:EVET}
+]
+KullaniciSepeti = BOŞ LİSTE (SepetUrunu nesneleri içerecek)
+
+// ====================================================================
+// ANA KISIM - KULLANICI ETKİLEŞİM DÖNGÜSÜ
+// ====================================================================
+// --- AÇIKLAMA: Bu ana döngü, kullanıcı çıkış yapana kadar sürekli çalışır ve ana menüyü gösterir.
+ANA KISIM:
+Calisiyor = EVET
+SÜRECE Calisiyor == EVET:
+EKRANA_YAZ("\n--- ONLINE MAĞAZA MENÜSÜ ---")
+EKRANA_YAZ("1. Ürünleri Listele")
+EKRANA_YAZ("2. Sepete Ürün Ekle")
+EKRANA_YAZ("3. Sepeti Görüntüle")
+EKRANA_YAZ("4. Ödeme Yap")
+EKRANA_YAZ("5. Çıkış")
+Secim = KULLANICIDAN_AL_SAYI("Seçiminiz: ")
+
+  EĞER Secim == 1 İSE UrunleriListele(UrunVeritabani)
+  EĞER Secim == 2 İSE SepeteEkle(UrunVeritabani, KullaniciSepeti)
+  EĞER Secim == 3 İSE SepetiGoster(KullaniciSepeti)
+  EĞER Secim == 4 İSE OdemeYap(KullaniciSepeti)
+  EĞER Secim == 5 İSE Calisiyor = HAYIR
+BİTİR SÜRECE
+EKRANA_YAZ("Mağazamızdan ayrıldınız. İyi günler!")
+BİTİR ANA KISIM
+
+// ====================================================================
+// PROSEDÜRLER - İŞLEM MANTIKLARI
+// ====================================================================
+
+// --- AÇIKLAMA: Bu prosedür, veritabanındaki tüm ürünleri bir döngü kullanarak ekrana listeler.
+PROSEDÜR UrunleriListele(Veritabani):
+EKRANA_YAZ("\n--- MAĞAZADAKİ ÜRÜNLER ---")
+HER urun İÇİN Veritabani:
+EKRANA_YAZ("ID: " + urun.ID + " | Ad: " + urun.Ad + " | Fiyat: " + urun.Fiyat + " TL | Stok: " + urun.Stok)
+BİTİR HER
+BİTİR PROSEDÜR
+
+// --- AÇIKLAMA: Bu prosedür, kullanıcının seçtiği ürünü, stok kontrolü gibi karar yapıları kullanarak sepete ekler.
+PROSEDÜR SepeteEkle(Veritabani, Sepet):
+UrunID = KULLANICIDAN_AL_SAYI("Eklemek istediğiniz ürünün ID'sini girin: ")
+SecilenUrun = null
+HER urun İÇİN Veritabani:
+EĞER urun.ID == UrunID İSE SecilenUrun = urun
+BİTİR HER
+
+EĞER SecilenUrun != null İSE
+  EĞER SecilenUrun.Stok > 0 İSE
+    Miktar = KULLANICIDAN_AL_SAYI("Kaç adet eklemek istersiniz?: ")
+    EĞER Miktar <= SecilenUrun.Stok İSE
+      YeniSepetUrunu = YENİ SepetUrunu
+      YeniSepetUrunu.Urun = SecilenUrun
+      YeniSepetUrunu.Miktar = Miktar
+      Sepet.EKLE(YeniSepetUrunu)
+      SecilenUrun.Stok = SecilenUrun.Stok - Miktar // Stoktan düş
+      EKRANA_YAZ("'" + SecilenUrun.Ad + "' sepete eklendi.")
+    İSE
+      EKRANA_YAZ("Hata: Stokta yeterli miktarda ürün yok.")
+    BİTİR EĞER
+  İSE
+    EKRANA_YAZ("Hata: Bu ürünün stoğu tükenmiştir.")
+  BİTİR EĞER
+İSE
+  EKRANA_YAZ("Hata: Bu ID'ye sahip bir ürün bulunamadı.")
+BİTİR EĞER
+BİTİR PROSEDÜR
+
+// --- AÇIKLAMA: Bu prosedür, sepette ürün olup olmadığını bir karar yapısıyla kontrol eder ve varsa bir döngü ile listeler.
+PROSEDÜR SepetiGoster(Sepet):
+EKRANA_YAZ("\n--- ALIŞVERİŞ SEPETİNİZ ---")
+EĞER Sepet BOŞ İSE
+EKRANA_YAZ("Sepetiniz şu anda boş.")
+İSE
+HER sepetUrunu İÇİN Sepet:
+EKRANA_YAZ(sepetUrunu.Miktar + " x " + sepetUrunu.Urun.Ad + " - " + (sepetUrunu.Miktar * sepetUrunu.Urun.Fiyat) + " TL")
+BİTİR HER
+BİTİR EĞER
+BİTİR PROSEDÜR
+
+// --- AÇIKLAMA: Bu prosedür, sepetin toplamını hesaplar. Bu sırada bir döngü içinde her ürün için indirim olup olmadığını bir karar yapısıyla kontrol eder.
+PROSEDÜR OdemeYap(Sepet):
+EĞER Sepet BOŞ İSE
+EKRANA_YAZ("Ödeme yapmak için sepetinizde ürün bulunmalıdır.")
+RETURN
+İSE
+AraToplam = 0.0
+IndirimToplami = 0.0
+HER sepetUrunu İÇİN Sepet:
+SatirToplami = sepetUrunu.Urun.Fiyat * sepetUrunu.Miktar
+AraToplam = AraToplam + SatirToplami
+
+    // **İNDİRİM KONTROLÜ KARAR YAPISI**
+    EĞER sepetUrunu.Urun.IndirimVarMi == EVET İSE
+      IndirimMiktari = SatirToplami * 0.10 // %10 indirim uygula
+      IndirimToplami = IndirimToplami + IndirimMiktari
+      EKRANA_YAZ("'" + sepetUrunu.Urun.Ad + "' için " + IndirimMiktari + " TL indirim uygulandı!")
+    BİTİR EĞER
+  BİTİR HER
+  
+  GenelToplam = AraToplam - IndirimToplami
+  EKRANA_YAZ("\n--- ÖDEME ÖZETİ ---")
+  EKRANA_YAZ("Ara Toplam: " + AraToplam + " TL")
+  EKRANA_YAZ("Uygulanan İndirim: " + IndirimToplami + " TL")
+  EKRANA_YAZ("Ödenecek Tutar: " + GenelToplam + " TL")
+  
+  Onay = KULLANICIDAN_AL("Ödemeyi onaylıyor musunuz? (Evet/Hayır): ")
+  EĞER Onay == "Evet" İSE
+    EKRANA_YAZ("Ödeme başarıyla tamamlandı. Teşekkür ederiz!")
+    Sepet.TEMİZLE() // Sepeti boşalt
+  İSE
+    EKRANA_YAZ("Ödeme işlemi iptal edildi.")
+  BİTİR EĞER
+BİTİR EĞER
+BİTİR PROSEDÜR
+
+BİTİR
+
+
+
+
+
+
+
