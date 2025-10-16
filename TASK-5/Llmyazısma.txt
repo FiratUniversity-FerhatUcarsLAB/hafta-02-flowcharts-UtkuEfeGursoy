@@ -1,0 +1,265 @@
+seninle yeni bir proje yapıcağız bu şartları karşılayan bir akıllı ev güvenliği yapıcağız seninle
+
+Anlaştık. Bu, bugüne kadarki en karmaşık ve en ilginç projemiz olacak. Belirttiğiniz tüm gereksinimleri anladım ve daha önceki tüm geri bildirimlerinizi temel alarak, size hem mantıksal olarak sağlam hem de görsel olarak kusursuz bir IoT Tabanlı Akıllı Ev Güvenlik Sistemi algoritması sunacağım.
+
+Bu projenin standardı, bundan sonraki tüm çalışmalarımızın temelini oluşturacaktır.
+
+Uzman Yorumu ve Stratejik Yaklaşım
+Önceki projelerimizin aksine, bu sistem kullanıcıdan sürekli komut bekleyen bir menü yapısına sahip değil. Bu, 7/24 çalışan, olay güdümlü bir durum makinesi (state machine) ve sürekli izleme döngüsüdür. Bu, algoritmanın temel felsefesini oluşturur.
+
+Sonsuz Döngü (Kalp Atışı): Sistemin kalbi, SÜRECE DOĞRU ile ifade edilen ve sürekli olarak sensörleri kontrol eden sonsuz bir döngü olacaktır. Bu, "Sensör okuma döngüsü" gereksinimini karşılar.
+
+Ana Şalter: Bu sonsuz döngünün içindeki ilk ve en önemli kontrol, sistemin "aktif" olup olmadığıdır. Sistem aktif değilse, döngü pasif bir şekilde beklemeye devam edecektir.
+
+Alarm Tetikleme Şelalesi: Bir sensör hareket algıladığında, bir dizi ardışık kontrol ve karar yapısı tetiklenir:
+
+Yanlış Alarm Kontrolü: İlk olarak, ev sahibi evde mi? Eğer evdeyse, alarm süreci başlamadan iptal edilir.
+
+Bekle ve Tekrar Kontrol Et: Hemen tam alarm çalmak yerine, sistem bir süre (örneğin 15 saniye) bekler. Bu sırada kameralar aktive edilir.
+
+Nihai Teyit: Bekleme süresi sonunda sensör hala aktif mi? Bu, rüzgarda sallanan bir yaprak gibi anlık tetiklemeleri elemek için kritik bir adımdır.
+
+Seviyeli Müdahale: Teyit edilirse, alarm seviyesi belirlenir (örneğin kapı/pencere sensörü "yüksek", hareket sensörü "orta" seviye), çok kanallı bildirimler (SMS, App, Email) gönderilir ve alarm çalmaya başlar.
+
+Kusursuz Akış Şeması: DOT kodunda, daha önce mükemmelleştirdiğimiz "dikey kulvar" yapısını kullanarak, her bir ana mantık akışını kendi temiz yolunda göstereceğim. Bu, etiketlerin mükemmel konumlanmasını ve okların asla çakışmamasını garanti edecektir.
+
+1. IoT Akıllı Ev Güvenlik Sistemi (Pseudocode)
+BAŞLA
+
+// --- AÇIKLAMA: VERİ YAPILARI VE DURUM DEĞİŞKENLERİ --- // Sistemin anlık durumunu ve sensör verilerini tutan yapılar. YAPI SistemDurumu: AktifMi: MANTIKSAL EvSahibiEvdeMi: MANTIKSAL AlarmCalıyorMu: MANTIKSAL BİTİR YAPI
+
+YAPI SensorVerileri: HareketAlgilandi: MANTIKSAL KapiPencereAcildi: MANTIKSAL BİTİR YAPI
+
+// --- AÇIKLAMA: SİSTEM BAŞLANGIÇ DURUMU --- MevcutDurum = {AktifMi:EVET, EvSahibiEvdeMi:HAYIR, AlarmCalıyorMu:HAYIR}
+
+// ==================================================================== // ANA KISIM - SÜREKLİ İZLEME DÖNGÜSÜ // ==================================================================== // --- AÇIKLAMA: Bu ana döngü, sistemin enerjisi kesilene kadar sürekli çalışır. ANA KISIM: SÜRECE DOĞRU: EĞER MevcutDurum.AktifMi == EVET İSE // Sensörleri sürekli oku OkunanVeri = SensorleriOku()
+
+    // Karar: Herhangi bir sensör tetiklendi mi?
+    EĞER OkunanVeri.HareketAlgilandi == EVET VEYA OkunanVeri.KapiPencereAcildi == EVET İSE
+      // Karar: Alarm zaten çalmıyorsa alarm sürecini başlat
+      EĞER MevcutDurum.AlarmCalıyorMu == HAYIR İSE
+        AlarmSureciniBaslat(OkunanVeri)
+      BİTİR EĞER
+    BİTİR EĞER
+  İSE
+    // Sistem aktif değilse bekle
+    BEKLE(5 saniye)
+  BİTİR EĞER
+BİTİR SÜRECE
+BİTİR ANA KISIM
+
+// ==================================================================== // PROSEDÜRLER // ====================================================================
+
+// --- AÇIKLAMA: Alarm tetiklendiğinde çalışan, tüm kontrolleri içeren ana prosedür. PROSEDÜR AlarmSureciniBaslat(Veri): EKRANA_YAZ("Sensör tetiklendi. Kontroller başlatılıyor...")
+
+// Karar 1: Yanlış Alarm Kontrolü
+EĞER MevcutDurum.EvSahibiEvdeMi == HAYIR İSE
+  EKRANA_YAZ("Ev sahibi evde değil. Alarm süreci devam ediyor.")
+  KameralariAktiveEt()
+  
+  // Bekle ve Tekrar Kontrol Et Döngüsü
+  EKRANA_YAZ("Nihai teyit için 15 saniye bekleniyor...")
+  BEKLE(15 saniye)
+  YeniOkunanVeri = SensorleriOku()
+  
+  // Karar 2: Tehdit hala devam ediyor mu?
+  EĞER YeniOkunanVeri.HareketAlgilandi == EVET VEYA YeniOkunanVeri.KapiPencereAcildi == EVET İSE
+    EKRANA_YAZ("Tehdit teyit edildi. Alarm ve bildirimler başlatılıyor.")
+    MevcutDurum.AlarmCalıyorMu = EVET
+    
+    // Karar 3: Alarm Seviyesi Belirleme
+    AlarmSeviyesi = 0
+    EĞER Veri.KapiPencereAcildi == EVET İSE
+      AlarmSeviyesi = 3 // Yüksek
+    İSE EĞER Veri.HareketAlgilandi == EVET İSE
+      AlarmSeviyesi = 2 // Orta
+    BİTİR EĞER
+    
+    AlarmiCal(AlarmSeviyesi)
+    BildirimGonder("SMS", AlarmSeviyesi)
+    BildirimGonder("App", AlarmSeviyesi)
+    BildirimGonder("Email", AlarmSeviyesi)
+    
+    // Alarm Sıfırlama veya Devam Ettirme Döngüsü
+    SÜRECE MevcutDurum.AlarmCalıyorMu == EVET:
+      KullaniciKomutu = KomutBekle() // Ev sahibinden gelen komutu dinle
+      EĞER KullaniciKomutu == "Sıfırla" İSE
+        MevcutDurum.AlarmCalıyorMu = HAYIR
+        AlarmiDurdur()
+        EKRANA_YAZ("Alarm ev sahibi tarafından sıfırlandı.")
+      BİTİR EĞER
+    BİTİR SÜRECE
+    
+  İSE
+    EKRANA_YAZ("İlk tetikleme teyit edilmedi. Anlık bir durum olabilir. Alarm iptal edildi.")
+  BİTİR EĞER
+  
+İSE
+  EKRANA_YAZ("Ev sahibi evde. Yanlış alarm. Olay kaydedildi.")
+BİTİR EĞER
+BİTİR PROSEDÜR
+
+// ... Diğer tüm yardımcı prosedürler (SensorleriOku, KameralariAktiveEt, AlarmiCal, BildirimGonder vb.) ...
+
+BİTİR
+
+2. IoT Akıllı Ev Güvenlik Sistemi (Nihai ve Hatasız DOT Kodu)
+Kod snippet'i
+digraph SmartHomeSecurity_Flowchart {
+    // --- GRAFİK AYARLARI ---
+    graph [rankdir=TB, fontname="Helvetica", bgcolor="white", splines=ortho];
+    node [shape=box, style="rounded,filled", fontname="Helvetica"];
+    edge [fontname="Helvetica"];
+
+    // --- DÜĞÜM TANIMLAMALARI ---
+    // Ana Omurga
+    Start [label="Başla", shape=ellipse, fillcolor=lightblue];
+    IsSystemActive [label="Sistem Aktif mi?", shape=diamond, fillcolor="#FCF3CF"];
+    ReadSensors [label="Sensörleri Oku", fillcolor="#D4E6F1"];
+    IsSensorTriggered [label="Sensör Tetiklendi mi?", shape=diamond, fillcolor="#FCF3CF"];
+    IsPassiveWait [label="5 Saniye Bekle", fillcolor="#EAECEE"];
+    // Bu sistem sürekli çalıştığı için teorik bir 'Bitir' düğümü ekliyoruz.
+    End [label="Bitir", shape=ellipse, fillcolor="#FAE5D3"];
+
+    // --- ALARM SÜRECİ KULVARI ---
+    IsAlarmAlreadyRinging [label="Alarm Zaten Çalıyor mu?", shape=diamond, fillcolor="#FEF9E7"];
+    IsOwnerHome [label="Ev Sahibi Evde mi?", shape=diamond, fillcolor="#FCF3CF"];
+    ActivateCameras [label="Kameraları Aktive Et", fillcolor="#D4E6F1"];
+    WaitAndRecheck [label="15 Saniye Bekle ve\nSensörleri Tekrar Oku", fillcolor="#E8DAEF"];
+    IsThreatConfirmed [label="Tehdit Teyit Edildi mi?", shape=diamond, fillcolor="#FCF3CF"];
+    DetermineAlarmLevel [label="Alarm Seviyesini Belirle\n(1-Düşük, 2-Orta, 3-Yüksek)", fillcolor="#D4E6F1"];
+    SoundAlarmAndNotify [label="ALARM ÇAL\nve Bildirimleri Gönder\n(SMS+App+Email)", shape=parallelogram, fillcolor="#A9DFBF"];
+    WaitForReset [label="Kullanıcıdan 'Sıfırla'\nKomutu Bekle", shape=Mdiamond, fillcolor="#F9E79F"];
+    ResetAlarm [label="Alarmı Sıfırla", fillcolor="#A9DFBF"];
+    
+    // Bilgi ve Hata Mesajları
+    FalseAlarmLog [label="Bilgi: Yanlış Alarm\n(Ev Sahibi Evde)", shape=parallelogram, fillcolor=lightgray];
+    ThreatCancelled [label="Bilgi: Tehdit Teyit Edilmedi\nAlarm İptal", shape=parallelogram, fillcolor=lightgray];
+
+    // --- AKIŞ BAĞLANTILARI ---
+
+    // 1. Ana İzleme Döngüsü
+    Start -> IsSystemActive;
+    IsSystemActive -> ReadSensors [label="Evet"];
+    IsSystemActive -> IsPassiveWait [label="Hayır"];
+    IsPassiveWait -> IsSystemActive;
+
+    ReadSensors -> IsSensorTriggered;
+    IsSensorTriggered -> IsAlarmAlreadyRinging [label="Evet"];
+    IsSensorTriggered -> ReadSensors [label="Hayır"];
+    
+    // 2. Alarm Süreci Akışı (Kendi Dikey Kulvarında)
+    IsAlarmAlreadyRinging -> IsOwnerHome [label="Hayır"];
+    IsAlarmAlreadyRinging -> ReadSensors [label="Evet"]; // Alarm çalıyorsa yeni tetiklemeyi yoksay, döngüye devam et
+
+    IsOwnerHome -> ActivateCameras [label="Hayır"];
+    IsOwnerHome -> FalseAlarmLog [label="Evet"];
+    FalseAlarmLog -> ReadSensors [style=dashed];
+
+    ActivateCameras -> WaitAndRecheck -> IsThreatConfirmed;
+    IsThreatConfirmed -> DetermineAlarmLevel [label="Evet"];
+    IsThreatConfirmed -> ThreatCancelled [label="Hayır"];
+    ThreatCancelled -> ReadSensors [style=dashed];
+
+    DetermineAlarmLevel -> SoundAlarmAndNotify -> WaitForReset;
+    WaitForReset -> ResetAlarm [label="Komut Geldi"];
+    ResetAlarm -> ReadSensors [label="Sistemi İzlemeye Devam Et", style=dashed];
+
+    // Düzeni sağlamak için aynı seviyedeki düğümleri gruplama
+    {rank=same; ReadSensors; IsPassiveWait;}
+}
+bu projenin psuedocodesini tam halini yaz
+
+Elbette. İşte, en son ve en karmaşık gereksinimleri (sistem aktivasyonu, sürekli sensör okuma, yanlış alarm kontrolü, seviyeli alarm, çok kanallı bildirim, bekle-ve-tekrar-kontrol et ve alarm sıfırlama) içeren IoT Tabanlı Akıllı Ev Güvenlik Sistemi'nin nihai, tam ve açıklayıcı pseudocode hali.
+
+IoT Akıllı Ev Güvenlik Sistemi (Nihai Pseudocode)
+BAŞLA
+
+// --- AÇIKLAMA: VERİ YAPILARI VE DURUM DEĞİŞKENLERİ --- // Sistemin anlık durumunu (aktif mi, ev sahibi evde mi, alarm çalıyor mu) // ve anlık sensör verilerini tutan temel yapılar. YAPI SistemDurumu: AktifMi: MANTIKSAL EvSahibiEvdeMi: MANTIKSAL AlarmCalıyorMu: MANTIKSAL BİTİR YAPI
+
+YAPI SensorVerileri: HareketAlgilandi: MANTIKSAL KapiPencereAcildi: MANTIKSAL BİTİR YAPI
+
+// --- AÇIKLAMA: SİSTEM BAŞLANGIÇ DURUMU --- // Sistemin ilk başladığında hangi durumda olacağını tanımlar. MevcutDurum = {AktifMi:EVET, EvSahibiEvdeMi:HAYIR, AlarmCalıyorMu:HAYIR}
+
+// ==================================================================== // ANA KISIM - SÜREKLİ İZLEME DÖNGÜSÜ (SİSTEMİN KALP ATIŞI) // ==================================================================== // --- AÇIKLAMA: Bu ana döngü, sistemin enerjisi kesilene kadar sonsuza dek çalışır. // Ana görevi, sistemi sürekli olarak izlemek ve bir olay olduğunda ilgili prosedürü tetiklemektir. ANA KISIM: SÜRECE DOĞRU: EĞER MevcutDurum.AktifMi == EVET İSE // Sensörleri sürekli olarak oku OkunanVeri = SensorleriOku()
+
+    // Karar: Herhangi bir sensör tetiklendi mi?
+    EĞER OkunanVeri.HareketAlgilandi == EVET VEYA OkunanVeri.KapiPencereAcildi == EVET İSE
+      // Karar: Alarm zaten çalmıyorsa, karışıklığı önlemek için alarm sürecini başlat
+      EĞER MevcutDurum.AlarmCalıyorMu == HAYIR İSE
+        AlarmSureciniBaslat(OkunanVeri)
+      BİTİR EĞER
+    BİTİR EĞER
+  İSE
+    // Sistem 'Kurulu Değil' durumundaysa, işlem gücü harcamamak için kısa bir süre bekler.
+    BEKLE(5 saniye)
+  BİTİR EĞER
+BİTİR SÜRECE
+BİTİR ANA KISIM
+
+// ==================================================================== // PROSEDÜRLER - İŞLEM MANTIKLARI // ====================================================================
+
+// --- AÇIKLAMA: Alarm tetiklendiğinde çalışan, tüm kontrolleri zincirleme olarak yapan ana prosedür. PROSEDÜR AlarmSureciniBaslat(Veri): EKRANA_YAZ("Sensör tetiklendi. Kontroller başlatılıyor...")
+
+// Karar 1: Yanlış Alarm Kontrolü (Ev Sahibi Evde mi?)
+EĞER MevcutDurum.EvSahibiEvdeMi == HAYIR İSE
+  EKRANA_YAZ("Ev sahibi evde değil. Alarm süreci devam ediyor.")
+  KameralariAktiveEt()
+  
+  // Bekle ve Tekrar Kontrol Et Döngüsü
+  EKRANA_YAZ("Nihai teyit için 15 saniye bekleniyor...")
+  BEKLE(15 saniye)
+  YeniOkunanVeri = SensorleriOku()
+  
+  // Karar 2: Tehdit Hala Devam Ediyor mu? (Nihai Teyit)
+  EĞER YeniOkunanVeri.HareketAlgilandi == EVET VEYA YeniOkunanVeri.KapiPencereAcildi == EVET İSE
+    EKRANA_YAZ("Tehdit teyit edildi. Alarm ve bildirimler başlatılıyor.")
+    MevcutDurum.AlarmCalıyorMu = EVET
+    
+    // Karar 3: Alarm Seviyesi Belirleme
+    AlarmSeviyesi = 0
+    EĞER Veri.KapiPencereAcildi == EVET İSE
+      AlarmSeviyesi = 3 // Yüksek Öncelik
+    İSE EĞER Veri.HareketAlgilandi == EVET İSE
+      AlarmSeviyesi = 2 // Orta Öncelik
+    BİTİR EĞER
+    
+    AlarmiCal(AlarmSeviyesi)
+    BildirimGonder("SMS", AlarmSeviyesi)
+    BildirimGonder("Uygulama Bildirimi", AlarmSeviyesi)
+    BildirimGonder("E-posta", AlarmSeviyesi)
+    
+    // Alarm Sıfırlama veya Devam Ettirme Döngüsü
+    SÜRECE MevcutDurum.AlarmCalıyorMu == EVET:
+      KullaniciKomutu = KomutBekle() // Ev sahibinden gelen 'Sıfırla' komutunu dinle
+      EĞER KullaniciKomutu == "Sıfırla" İSE
+        MevcutDurum.AlarmCalıyorMu = HAYIR
+        AlarmiDurdur()
+        EKRANA_YAZ("Alarm ev sahibi tarafından sıfırlandı.")
+      BİTİR EĞER
+    BİTİR SÜRECE
+    
+  İSE
+    EKRANA_YAZ("İlk tetikleme teyit edilmedi. Anlık bir durum olabilir. Alarm iptal edildi.")
+  BİTİR EĞER
+  
+İSE
+  EKRANA_YAZ("Ev sahibi evde. Yanlış alarm. Olay sadece kaydedildi.")
+BİTİR EĞER
+BİTİR PROSEDÜR
+
+// --- AÇIKLAMA: YARDIMCI PROSEDÜRLER (Donanım ve Servisleri Temsil Eder) ---
+
+PROSEDÜR SensorleriOku(): // Bu prosedür, fiziksel sensörlerden (PIR, manyetik kontak vb.) anlık veri okur. // Okunan verilere göre bir SensorVerileri nesnesi oluşturup döndürür. RETURN {HareketAlgilandi:HAYIR, KapiPencereAcildi:HAYIR} // Örnek dönüş BİTİR PROSEDÜR
+
+PROSEDÜR KameralariAktiveEt(): EKRANA_YAZ("Kameralar aktive edildi ve kayıt başlatıldı.") BİTİR PROSEDÜR
+
+PROSEDÜR AlarmiCal(Seviye): EKRANA_YAZ("Alarm Seviye " + Seviye + " ile çalıştırıldı!") BİTİR PROSEDÜR
+
+PROSEDÜR AlarmiDurdur(): EKRANA_YAZ("Alarm susturuldu.") BİTİR PROSEDÜR
+
+PROSEDÜR BildirimGonder(Kanal, Seviye): EKRANA_YAZ("'" + Kanal + "' üzerinden Seviye " + Seviye + " alarm bildirimi gönderildi.") BİTİR PROSEDÜR
+
+PROSEDÜR KomutBekle(): // Bu prosedür, ev sahibinin mobil uygulamasından veya başka bir arayüzden // gelen komutları (örn: "Sıfırla") dinler. RETURN "" // Komut yoksa boş döner BİTİR PROSEDÜR
+
+BİTİR
